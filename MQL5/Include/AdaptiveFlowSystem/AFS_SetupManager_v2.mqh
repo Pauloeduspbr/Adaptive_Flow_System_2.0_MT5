@@ -159,10 +159,10 @@ public:
       ZeroMemory(out_short);
       out_long.setup_type = SETUP_A_LIQUIDITY_RAID;
       out_short.setup_type = SETUP_A_LIQUIDITY_RAID;
-      out_long.direction = SIGNAL_LONG;
-      out_short.direction = SIGNAL_SHORT;
-      out_long.order_type = ORDER_TYPE_MARKET;
-      out_short.order_type = ORDER_TYPE_MARKET;
+      out_long.direction = DIR_LONG;
+      out_short.direction = DIR_SHORT;
+      out_long.order_type = ORDER_SIGNAL_MARKET;
+      out_short.order_type = ORDER_SIGNAL_MARKET;
       out_long.is_valid = false;
       out_short.is_valid = false;
       
