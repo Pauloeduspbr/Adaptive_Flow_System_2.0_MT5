@@ -1,0 +1,124 @@
+; saved automatically by MetaTrader 5
+; this file contains input parameters for testing/optimizing AdaptiveFlowSystem_v2 expert advisor
+; 🔥 v2.00 - OPTIMIZED SETTINGS
+; DI Margin = -5.0 (mais permissivo)
+; WAE Filter desabilitado no código
+; Cache otimizado para melhor performance
+
+;--- GENERAL SETTINGS
+InpSymbol=
+InpTimeframe=15
+InpMagicNumber=240125
+InpTradeComment=AFS_v2
+
+;--- TIME FILTER
+InpEnableTimeFilter=true||false||0||true||N
+InpStartTime=03:00
+InpEndTime=22:00
+InpTimezoneOffset=2||0||2||12||N
+
+;--- DAY FILTER
+InpTradeSunday=false||false||0||true||N
+InpTradeMonday=true||false||0||true||N
+InpTradeTuesday=true||false||0||true||N
+InpTradeWednesday=true||false||0||true||N
+InpTradeThursday=true||false||0||true||N
+InpTradeFriday=true||false||0||true||N
+InpTradeSaturday=false||false||0||true||N
+
+;--- SESSION FILTER
+InpTradeAsianSession=false||false||0||true||N
+InpTradeLondonSession=true||false||0||true||N
+InpTradeNewYorkSession=true||false||0||true||N
+
+;--- RISK MANAGEMENT
+InpRiskPercentPerTrade=1.0||0.5||1.0||3.0||0.5
+InpMaxDailyRiskPercent=2.0||1.0||2.0||5.0||1.0
+InpMaxWeeklyRiskPercent=5.0||2.0||5.0||10.0||2.0
+InpMaxDrawdownPercent=10.0||5.0||10.0||20.0||5.0
+InpMaxSimultaneousSetups=3||1||3||5||1
+InpMaxTradesPerDay=5||1||5||10||1
+InpMaxConsecutiveLosses=3||1||3||5||1
+InpCorrelationThreshold=0.75||0.5||0.75||0.95||0.05
+
+;--- POSITION SIZING
+InpUseFixedLot=false||false||0||true||N
+InpFixedLotSize=0.01||0.01||0.01||1.0||0.01
+InpLotMultiplier=1.0||0.5||1.0||2.0||0.25
+InpMinLot=0.01||0.01||0.01||0.1||0.01
+InpMaxLot=100.0||1.0||100.0||1000.0||10.0
+
+;--- INDICATORS
+InpADXPeriod=14||10||14||20||2
+InpCIPeriod=14||10||14||20||2
+InpBBPeriod=20||15||20||30||5
+InpBBDeviation=2.0||1.5||2.0||3.0||0.5
+InpKCPeriod=20||15||20||30||5
+InpKCMultiplier=1.5||1.0||1.5||2.5||0.5
+InpATRPeriod=14||10||14||20||2
+InpATRROCPeriod=5||3||5||10||1
+InpWAEFastMA=20||15||20||30||5
+InpWAESlowMA=40||30||40||50||5
+InpWAESensitivity=150||100||150||200||25
+InpUseVolumeProfile=true||false||0||true||N
+InpVPSessionBars=100||50||100||200||25
+
+;--- REGIME DETECTION
+InpRegimeConfidenceMin=0.50||0.3||0.5||0.8||0.1
+InpRegimeVotesMin=5||3||5||8||1
+InpRegimeADXTrendThreshold=25.0||20.0||25.0||35.0||5.0
+InpRegimeCITrendThreshold=38.2||30.0||38.2||45.0||5.0
+InpRegimeCIRangingThreshold=61.8||55.0||61.8||70.0||5.0
+InpRegimeBBWSqueezeThreshold=3.0||2.0||3.0||5.0||0.5
+InpRegimeATRPctLowThreshold=0.5||0.3||0.5||1.0||0.1
+InpRegimeATRPctHighThreshold=1.2||0.8||1.2||2.0||0.2
+InpRegimeATRROCAccelThreshold=15.0||10.0||15.0||25.0||5.0
+InpRegimeATRROCDecelThreshold=-15.0||-25.0||-15.0||-5.0||5.0
+InpRegimeDIDominanceThreshold=5.0||0.0||5.0||10.0||2.5
+
+;--- SETUP ENABLE/DISABLE
+InpEnableSetupA=true||false||0||true||N
+InpEnableSetupB=false||false||0||true||N
+InpEnableSetupC=false||false||0||true||N
+InpEnableSetupD=false||false||0||true||N
+InpEnableSetupE=false||false||0||true||N
+InpEnableSetupF=false||false||0||true||N
+
+;--- PENDING ORDERS
+InpPendingTimeoutBars=10||5||10||20||5
+InpCancelPendingOnRegimeChange=true||false||0||true||N
+
+;--- SETUP A LONG (🔥 DI MARGIN = -5.0 = MAIS PERMISSIVO)
+InpSetupA_LiqLookbackBars=20||10||20||30||5
+InpSetupA_LiqSweepPips_Long=2.0||1.0||2.0||5.0||0.5
+InpSetupA_LiqSLBufferPips_Long=8.0||5.0||8.0||15.0||2.0
+InpSetupA_LiqDIMargin_Long=-5.0||-10.0||-5.0||5.0||2.5
+InpSetupA_LiqWAEThreshold_Long=0.40||0.2||0.4||0.8||0.1
+InpSetupA_BE_ActivationR_Long=0.5||0.3||0.5||1.0||0.1
+InpSetupA_BE_OffsetPips_Long=5.0||2.0||5.0||10.0||2.0
+InpSetupA_TS_ActivationR_Long=0.8||0.5||0.8||1.5||0.2
+InpSetupA_TS_DistanceATR_Long=1.0||0.5||1.0||2.0||0.5
+InpSetupA_SL_ATRMultiplier_Long=1.5||1.0||1.5||3.0||0.5
+InpSetupA_TP_RRRatio_Long=5.0||2.0||5.0||10.0||1.0
+InpSetupA_TP_UseLevels_Long=true||false||0||true||N
+
+;--- SETUP A SHORT (🔥 DI MARGIN = -5.0 = MAIS PERMISSIVO)
+InpSetupA_LiqSweepPips_Short=2.0||1.0||2.0||5.0||0.5
+InpSetupA_LiqSLBufferPips_Short=8.0||5.0||8.0||15.0||2.0
+InpSetupA_LiqDIMargin_Short=-5.0||-10.0||-5.0||5.0||2.5
+InpSetupA_LiqWAEThreshold_Short=0.40||0.2||0.4||0.8||0.1
+InpSetupA_BE_ActivationR_Short=0.5||0.3||0.5||1.0||0.1
+InpSetupA_BE_OffsetPips_Short=5.0||2.0||5.0||10.0||2.0
+InpSetupA_TS_ActivationR_Short=0.8||0.5||0.8||1.5||0.2
+InpSetupA_TS_DistanceATR_Short=1.0||0.5||1.0||2.0||0.5
+InpSetupA_SL_ATRMultiplier_Short=1.5||1.0||1.5||3.0||0.5
+InpSetupA_TP_RRRatio_Short=5.0||2.0||5.0||10.0||1.0
+InpSetupA_TP_UseLevels_Short=true||false||0||true||N
+
+;--- DEBUG & LOGS
+InpEnableDebugLogs=true||false||0||true||N
+InpDebugLogSignals=true||false||0||true||N
+InpDebugLogExecution=false||false||0||true||N
+InpDebugLogManagement=false||false||0||true||N
+InpEnableSetupLogs=true||false||0||true||N
+InpEnableRegimeLogs=true||false||0||true||N

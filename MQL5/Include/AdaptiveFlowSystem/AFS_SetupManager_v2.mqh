@@ -168,11 +168,19 @@ public:
       
       // FILTRO 1: Regime deve ser TRENDING ou RANGING
       if(regime == REGIME_BREAKOUT) {
+         if(m_params.debug_log_signals) {
+            PrintFormat("❌ SETUP A rejeitado: Regime = BREAKOUT (não adequado para liquidity raid)");
+         }
          return; // Sem liquidity raids em breakout
       }
       
       // FILTRO 2: ADX não pode estar muito alto (evitar trending forte)
-      if(sig.adx > m_params.regime_adx_trend_threshold + 10.0) {
+      double adx_limit = m_params.regime_adx_trend_threshold + 10.0;
+      if(sig.adx > adx_limit) {
+         if(m_params.debug_log_signals) {
+            PrintFormat("❌ SETUP A rejeitado: ADX %.2f > %.2f (trending muito forte)", 
+                       sig.adx, adx_limit);
+         }
          return; // Trending muito forte para reversão
       }
       
@@ -216,11 +224,19 @@ public:
          // SWEEP DETECTADO!
          
          if(m_params.debug_log_signals) {
-            PrintFormat("✅ SWEEP DETECTADO! Verificando filtros...");
+            PrintFormat("✅ SWEEP LONG DETECTADO! sweep=%.1f pips, +DI=%.2f, -DI=%.2f, margin=%.2f",
+                       sweep_distance, sig.plus_di, sig.minus_di, di_margin);
          }
          
          // FILTRO 3: +DI deve dominar -DI (comprador assumindo controle)
+         // 🔥 CORREÇÃO: DI margin pode ser negativo (permite +DI <= -DI se margem for -5.0, por exemplo)
+         // Se di_margin = 0.0, aceita qualquer valor onde +DI >= -DI
+         // Se di_margin = -5.0, aceita +DI >= -DI - 5.0 (mais permissivo)
          if((sig.plus_di - sig.minus_di) < di_margin) {
+            if(m_params.debug_log_signals) {
+               PrintFormat("❌ FILTRO DI REJEITADO: +DI-(-DI)=%.2f < margin=%.2f", 
+                          sig.plus_di - sig.minus_di, di_margin);
+            }
             return;
          }
          
@@ -235,6 +251,10 @@ public:
          // FILTRO 5: Close[0] deve estar acima do swing_low (confirmação reversão)
          double close_0 = iClose(m_symbol, m_tf, 0);
          if(close_0 <= swing_low) {
+            if(m_params.debug_log_signals) {
+               PrintFormat("❌ FILTRO CLOSE REJEITADO: close[0]=%.5f <= swing_low=%.5f", 
+                          close_0, swing_low);
+            }
             return;
          }
          
@@ -286,7 +306,17 @@ public:
       if(sweep_distance_short >= sweep_pips) {
          // SWEEP SHORT DETECTADO
          
+         if(m_params.debug_log_signals) {
+            PrintFormat("✅ SWEEP SHORT DETECTADO! sweep=%.1f pips, -DI=%.2f, +DI=%.2f, margin=%.2f",
+                       sweep_distance_short, sig.minus_di, sig.plus_di, di_margin);
+         }
+         
+         // FILTRO DI: -DI deve dominar +DI
          if((sig.minus_di - sig.plus_di) < di_margin) {
+            if(m_params.debug_log_signals) {
+               PrintFormat("❌ FILTRO DI REJEITADO: -DI-(+DI)=%.2f < margin=%.2f", 
+                          sig.minus_di - sig.plus_di, di_margin);
+            }
             return;
          }
          
@@ -299,6 +329,10 @@ public:
          
          double close_0 = iClose(m_symbol, m_tf, 0);
          if(close_0 >= swing_high) {
+            if(m_params.debug_log_signals) {
+               PrintFormat("❌ FILTRO CLOSE REJEITADO: close[0]=%.5f >= swing_high=%.5f", 
+                          close_0, swing_high);
+            }
             return;
          }
          

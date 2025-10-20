@@ -151,44 +151,93 @@ public:
    ENUM_MARKET_REGIME Detect(SRegimeSignals &out_signals, double &out_confidence)
    {
       // 🔥 CORREÇÃO #43: Cache por barra evita recálculo (zero logs nessa função)
+      // 🔥 OTIMIZAÇÃO: Cache é checado primeiro (evita recálculos desnecessários)
       datetime bar_time = iTime(m_symbol, m_tf, 1);
-      if(bar_time == m_cache_time) {
+      
+      if(bar_time == m_cache_time && bar_time > 0) {
+         // Cache hit - retornar valores já calculados
          out_signals = m_cache_signals;
          out_confidence = m_cache_confidence;
          return m_cache_regime;
       }
+      
+      // Cache miss - recalcular tudo
       SRegimeSignals s; ZeroMemory(s);
       s.timestamp = TimeCurrent();
       s.price_close = iClose(m_symbol, m_tf, 1);
-      CBufferReader::CopyLatest(m_h_adx, 0, 1, s.adx);
-      CBufferReader::CopyLatest(m_h_adx, 1, 1, s.plus_di);
-      CBufferReader::CopyLatest(m_h_adx, 2, 1, s.minus_di);
-      CBufferReader::CopyLatest(m_h_ci, 0, 1, s.ci);
-      double bbu=EMPTY_VALUE, bbm=EMPTY_VALUE, bbl=EMPTY_VALUE;
-      double sq_now=0.0, sq_prev=0.0;
-      CBufferReader::CopyLatest(m_h_sq, 0, 1, bbu);
-      CBufferReader::CopyLatest(m_h_sq, 1, 1, bbm);
-      CBufferReader::CopyLatest(m_h_sq, 2, 1, bbl);
-      CBufferReader::CopyTwo(m_h_sq, 6, 1, sq_now, sq_prev);
-      s.bbw_pct = (bbm!=0.0 && MathIsValidNumber(bbm) && MathIsValidNumber(bbu) && MathIsValidNumber(bbl))
+      
+      // 🔥 OTIMIZAÇÃO: Usar arrays de buffer pre-alocados (evita múltiplas alocações)
+      double adx_buf[2], plus_di_buf[2], minus_di_buf[2];
+      double ci_buf[2];
+      double bb_upper[2], bb_middle[2], bb_lower[2], squeeze_buf[2];
+      double atr_buf[2], atr_pct_buf[2], atr_roc_buf[2];
+      double wae_up[2], wae_dn[2], wae_exp[2];
+      double vp_poc[2], vp_vah[2], vp_val[2];
+      
+      // Copiar todos os buffers de uma vez (batch copy é mais rápido)
+      bool copy_ok = true;
+      
+      copy_ok &= (CopyBuffer(m_h_adx, 0, 1, 2, adx_buf) == 2);
+      copy_ok &= (CopyBuffer(m_h_adx, 1, 1, 2, plus_di_buf) == 2);
+      copy_ok &= (CopyBuffer(m_h_adx, 2, 1, 2, minus_di_buf) == 2);
+      
+      copy_ok &= (CopyBuffer(m_h_ci, 0, 1, 2, ci_buf) == 2);
+      
+      copy_ok &= (CopyBuffer(m_h_sq, 0, 1, 2, bb_upper) == 2);
+      copy_ok &= (CopyBuffer(m_h_sq, 1, 1, 2, bb_middle) == 2);
+      copy_ok &= (CopyBuffer(m_h_sq, 2, 1, 2, bb_lower) == 2);
+      copy_ok &= (CopyBuffer(m_h_sq, 6, 1, 2, squeeze_buf) == 2);
+      
+      copy_ok &= (CopyBuffer(m_h_atr, 0, 1, 2, atr_buf) == 2);
+      copy_ok &= (CopyBuffer(m_h_atr, 1, 1, 2, atr_pct_buf) == 2);
+      copy_ok &= (CopyBuffer(m_h_atr, 2, 1, 2, atr_roc_buf) == 2);
+      
+      copy_ok &= (CopyBuffer(m_h_wae, 0, 1, 2, wae_up) == 2);
+      copy_ok &= (CopyBuffer(m_h_wae, 1, 1, 2, wae_dn) == 2);
+      copy_ok &= (CopyBuffer(m_h_wae, 2, 1, 2, wae_exp) == 2);
+      
+      if(m_h_vp != INVALID_HANDLE) {
+         copy_ok &= (CopyBuffer(m_h_vp, 0, 1, 2, vp_poc) == 2);
+         copy_ok &= (CopyBuffer(m_h_vp, 1, 1, 2, vp_vah) == 2);
+         copy_ok &= (CopyBuffer(m_h_vp, 2, 1, 2, vp_val) == 2);
+      }
+      
+      if(!copy_ok) {
+         // Erro ao copiar buffers - retornar último regime conhecido
+         out_signals = m_cache_signals;
+         out_confidence = m_cache_confidence;
+         return m_cache_regime;
+      }
+      
+      // Preencher estrutura com valores copiados
+      s.adx = adx_buf[0];
+      s.plus_di = plus_di_buf[0];
+      s.minus_di = minus_di_buf[0];
+      
+      s.ci = ci_buf[0];
+      
+      double bbu = bb_upper[0];
+      double bbm = bb_middle[0];
+      double bbl = bb_lower[0];
+      s.bbw_pct = (bbm != 0.0 && MathIsValidNumber(bbm) && MathIsValidNumber(bbu) && MathIsValidNumber(bbl))
                   ? ((bbu - bbl) / bbm) * 100.0 : 0.0;
-      s.squeeze_now  = (sq_now >= 0.5);
-      s.squeeze_prev = (sq_prev >= 0.5);
-      CBufferReader::CopyLatest(m_h_atr, 0, 1, s.atr);
-      CBufferReader::CopyLatest(m_h_atr, 1, 1, s.atr_pct);
-      CBufferReader::CopyLatest(m_h_atr, 2, 1, s.atr_roc);
-      double wae_up=0.0, wae_dn=0.0, wae_exp=0.0;
-      double wae_up_prev=0.0, wae_dn_prev=0.0, wae_exp_prev=0.0;
-      CBufferReader::CopyTwo(m_h_wae, 0, 1, wae_up,     wae_up_prev);
-      CBufferReader::CopyTwo(m_h_wae, 1, 1, wae_dn,     wae_dn_prev);
-      CBufferReader::CopyTwo(m_h_wae, 2, 1, wae_exp,    wae_exp_prev);
-      s.wae_trend_up   = MathAbs(wae_up);
-      s.wae_trend_down = MathAbs(wae_dn);
-      s.wae_explosion  = MathAbs(wae_exp);
-      double wae_explosion_prev = MathAbs(wae_exp_prev);
-      CBufferReader::CopyLatest(m_h_vp, 0, 1, s.poc);
-      CBufferReader::CopyLatest(m_h_vp, 1, 1, s.vah);
-      CBufferReader::CopyLatest(m_h_vp, 2, 1, s.val);
+      s.squeeze_now = (squeeze_buf[0] >= 0.5);
+      s.squeeze_prev = (squeeze_buf[1] >= 0.5);
+      
+      s.atr = atr_buf[0];
+      s.atr_pct = atr_pct_buf[0];
+      s.atr_roc = atr_roc_buf[0];
+      
+      s.wae_trend_up = MathAbs(wae_up[0]);
+      s.wae_trend_down = MathAbs(wae_dn[0]);
+      s.wae_explosion = MathAbs(wae_exp[0]);
+      double wae_explosion_prev = MathAbs(wae_exp[1]);
+      
+      if(m_h_vp != INVALID_HANDLE) {
+         s.poc = vp_poc[0];
+         s.vah = vp_vah[0];
+         s.val = vp_val[0];
+      }
       // ========== VOTING SYSTEM - 8 INDICATORS ==========
       int v_trend=0, v_breakout=0, v_range=0, v_total=0;
       
