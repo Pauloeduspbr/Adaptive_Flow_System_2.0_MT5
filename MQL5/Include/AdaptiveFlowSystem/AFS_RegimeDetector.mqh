@@ -166,13 +166,29 @@ public:
       s.timestamp = TimeCurrent();
       s.price_close = iClose(m_symbol, m_tf, 1);
       
-      // 🔥 OTIMIZAÇÃO: Usar arrays de buffer pre-alocados (evita múltiplas alocações)
-      double adx_buf[2], plus_di_buf[2], minus_di_buf[2];
-      double ci_buf[2];
-      double bb_upper[2], bb_middle[2], bb_lower[2], squeeze_buf[2];
-      double atr_buf[2], atr_pct_buf[2], atr_roc_buf[2];
-      double wae_up[2], wae_dn[2], wae_exp[2];
-      double vp_poc[2], vp_vah[2], vp_val[2];
+      // 🔥 OTIMIZAÇÃO: Usar arrays DINÂMICOS (MQL5 requer [] vazio para CopyBuffer)
+      double adx_buf[], plus_di_buf[], minus_di_buf[];
+      double ci_buf[];
+      double bb_upper[], bb_middle[], bb_lower[], squeeze_buf[];
+      double atr_buf[], atr_pct_buf[], atr_roc_buf[];
+      double wae_up[], wae_dn[], wae_exp[];
+      double vp_poc[], vp_vah[], vp_val[];
+      
+      // Redimensionar arrays (necessário antes de CopyBuffer)
+      ArrayResize(adx_buf, 2); ArrayResize(plus_di_buf, 2); ArrayResize(minus_di_buf, 2);
+      ArrayResize(ci_buf, 2);
+      ArrayResize(bb_upper, 2); ArrayResize(bb_middle, 2); ArrayResize(bb_lower, 2); ArrayResize(squeeze_buf, 2);
+      ArrayResize(atr_buf, 2); ArrayResize(atr_pct_buf, 2); ArrayResize(atr_roc_buf, 2);
+      ArrayResize(wae_up, 2); ArrayResize(wae_dn, 2); ArrayResize(wae_exp, 2);
+      ArrayResize(vp_poc, 2); ArrayResize(vp_vah, 2); ArrayResize(vp_val, 2);
+      
+      // Configurar como series (otimização de acesso)
+      ArraySetAsSeries(adx_buf, true); ArraySetAsSeries(plus_di_buf, true); ArraySetAsSeries(minus_di_buf, true);
+      ArraySetAsSeries(ci_buf, true);
+      ArraySetAsSeries(bb_upper, true); ArraySetAsSeries(bb_middle, true); ArraySetAsSeries(bb_lower, true); ArraySetAsSeries(squeeze_buf, true);
+      ArraySetAsSeries(atr_buf, true); ArraySetAsSeries(atr_pct_buf, true); ArraySetAsSeries(atr_roc_buf, true);
+      ArraySetAsSeries(wae_up, true); ArraySetAsSeries(wae_dn, true); ArraySetAsSeries(wae_exp, true);
+      ArraySetAsSeries(vp_poc, true); ArraySetAsSeries(vp_vah, true); ArraySetAsSeries(vp_val, true);
       
       // Copiar todos os buffers de uma vez (batch copy é mais rápido)
       bool copy_ok = true;
@@ -231,6 +247,10 @@ public:
       s.wae_trend_up = MathAbs(wae_up[0]);
       s.wae_trend_down = MathAbs(wae_dn[0]);
       s.wae_explosion = MathAbs(wae_exp[0]);
+      
+      // 🔥 CORREÇÃO: Extrair valores anteriores para uso no WAE cross detection
+      double wae_up_prev = MathAbs(wae_up[1]);
+      double wae_dn_prev = MathAbs(wae_dn[1]);
       double wae_explosion_prev = MathAbs(wae_exp[1]);
       
       if(m_h_vp != INVALID_HANDLE) {
@@ -300,8 +320,8 @@ public:
       }
       
       // Vote 6: WAE (Waddah Attar Explosion - momentum)
-      bool wae_bull_cross = (MathAbs(wae_up_prev) <= wae_explosion_prev && MathAbs(wae_up) > s.wae_explosion);
-      bool wae_bear_cross = (MathAbs(wae_dn_prev) <= wae_explosion_prev && MathAbs(wae_dn) > s.wae_explosion);
+      bool wae_bull_cross = (wae_up_prev <= wae_explosion_prev && s.wae_trend_up > s.wae_explosion);
+      bool wae_bear_cross = (wae_dn_prev <= wae_explosion_prev && s.wae_trend_down > s.wae_explosion);
       v_total++;
       if(wae_bull_cross || wae_bear_cross) 
          v_breakout++; // Explosion cross = breakout
