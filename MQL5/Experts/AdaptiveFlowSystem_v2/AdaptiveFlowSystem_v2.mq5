@@ -550,7 +550,7 @@ bool CreateIndicatorHandles()
    }
    
    // Choppiness Index (custom)
-   g_h_ci = iCustom(symbol, InpTimeframe, "Indicators/ChoppinessIndex_Professional/ChoppinessIndex_Professional",
+   g_h_ci = iCustom(symbol, InpTimeframe, "ChoppinessIndex_Professional/ChoppinessIndex_Professional",
                     InpCIPeriod);
    if(g_h_ci == INVALID_HANDLE) {
       PrintFormat("❌ Failed to create CI handle");
@@ -558,7 +558,7 @@ bool CreateIndicatorHandles()
    }
    
    // Bollinger/Keltner Squeeze (custom)
-   g_h_squeeze = iCustom(symbol, InpTimeframe, "Indicators/BollingerKeltnerSqueeze_Professional/BollingerKeltnerSqueeze_Professional",
+   g_h_squeeze = iCustom(symbol, InpTimeframe, "BollingerKeltnerSqueeze_Professional/BollingerKeltnerSqueeze_Professional",
                         InpBBPeriod, InpBBDeviation, InpKCPeriod, InpKCMultiplier);
    if(g_h_squeeze == INVALID_HANDLE) {
       PrintFormat("❌ Failed to create Squeeze handle");
@@ -566,7 +566,7 @@ bool CreateIndicatorHandles()
    }
    
    // ATR Professional (custom)
-   g_h_atr = iCustom(symbol, InpTimeframe, "Indicators/ATR_Professional/ATR_Professional",
+   g_h_atr = iCustom(symbol, InpTimeframe, "ATR_Professional/ATR_Professional",
                     InpATRPeriod, InpATRROCPeriod);
    if(g_h_atr == INVALID_HANDLE) {
       PrintFormat("❌ Failed to create ATR handle");
@@ -574,7 +574,7 @@ bool CreateIndicatorHandles()
    }
    
    // WAE (custom)
-   g_h_wae = iCustom(symbol, InpTimeframe, "Indicators/WaddahAttarExplosion_Professional/WaddahAttarExplosion_Professional",
+   g_h_wae = iCustom(symbol, InpTimeframe, "WaddahAttarExplosion_Professional/WaddahAttarExplosion_Professional",
                     InpWAEFastMA, InpWAESlowMA, InpBBPeriod, InpBBDeviation, InpWAESensitivity);
    if(g_h_wae == INVALID_HANDLE) {
       PrintFormat("❌ Failed to create WAE handle");
@@ -583,7 +583,7 @@ bool CreateIndicatorHandles()
    
    // Volume Profile (custom) - optional
    if(InpUseVolumeProfile) {
-      g_h_vp = iCustom(symbol, InpTimeframe, "Indicators/VolumeProfile_Professional/VolumeProfile_Professional",
+      g_h_vp = iCustom(symbol, InpTimeframe, "VolumeProfile_Professional/VolumeProfile_Professional",
                       InpVPSessionBars);
       if(g_h_vp == INVALID_HANDLE) {
          PrintFormat("⚠️ Failed to create VP handle - continuing without VP");
