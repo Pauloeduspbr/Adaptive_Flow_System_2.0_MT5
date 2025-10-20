@@ -183,7 +183,7 @@ public:
          }
          
          // Check 1: Expiração por bars
-         string symbol = m_symbol_mgr->GetSymbol();
+         string symbol = m_symbol_mgr.GetSymbol();
          int current_bar = iBars(symbol, m_params.timeframe);
          int bars_elapsed = current_bar - m_trade_states[i].expiration_bar;
          
@@ -605,7 +605,7 @@ public:
       m_trade_states[slot].current_sl = signal.sl_price;
       m_trade_states[slot].current_tp = signal.tp_price;
       
-      string symbol = m_symbol_mgr->GetSymbol();
+      string symbol = m_symbol_mgr.GetSymbol();
       m_trade_states[slot].expiration_bar = iBars(symbol, m_params.timeframe);
       m_trade_states[slot].is_active = true;
       

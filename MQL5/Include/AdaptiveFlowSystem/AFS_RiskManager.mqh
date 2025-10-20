@@ -237,7 +237,7 @@ public:
       }
       
       // Calcular valor do pip
-      double pip_value_per_lot = m_symbol_mgr->GetPipValue(1.0);
+      double pip_value_per_lot = m_symbol_mgr.GetPipValue(1.0);
       
       if(pip_value_per_lot == 0) {
          PrintFormat("❌ Pip value zero");
@@ -245,16 +245,16 @@ public:
       }
       
       // Calcular pips de risco
-      double risk_pips = m_symbol_mgr->PriceToPips(risk_price);
+      double risk_pips = m_symbol_mgr.PriceToPips(risk_price);
       
       // Calcular lotes: risk_money / (risk_pips * pip_value_per_pip)
-      double lots = risk_money / (risk_pips * (pip_value_per_lot / m_symbol_mgr->GetContractSize()));
+      double lots = risk_money / (risk_pips * (pip_value_per_lot / m_symbol_mgr.GetContractSize()));
       
       // Aplicar multiplicador (se houver)
       lots *= m_params.lot_multiplier;
       
       // Normalizar
-      string symbol = m_symbol_mgr->GetSymbol();
+      string symbol = m_symbol_mgr.GetSymbol();
       lots = NormalizeLot(lots, symbol);
       
       // Aplicar limites min/max
@@ -272,10 +272,10 @@ public:
       // Calcular risco percentual de uma posição
       
       double risk_price = MathAbs(entry - sl);
-      double risk_pips = m_symbol_mgr->PriceToPips(risk_price);
-      double pip_value_per_lot = m_symbol_mgr->GetPipValue(1.0);
+      double risk_pips = m_symbol_mgr.PriceToPips(risk_price);
+      double pip_value_per_lot = m_symbol_mgr.GetPipValue(1.0);
       
-      double risk_money = risk_pips * (pip_value_per_lot / m_symbol_mgr->GetContractSize()) * lots;
+      double risk_money = risk_pips * (pip_value_per_lot / m_symbol_mgr.GetContractSize()) * lots;
       
       double account_balance = AccountInfoDouble(ACCOUNT_BALANCE);
       
@@ -390,7 +390,7 @@ public:
          ulong ticket = PositionGetTicket(i);
          if(ticket <= 0) continue;
          
-         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr->GetSymbol()) continue;
+         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr.GetSymbol()) continue;
          
          double position_entry = PositionGetDouble(POSITION_PRICE_OPEN);
          double position_sl = PositionGetDouble(POSITION_SL);

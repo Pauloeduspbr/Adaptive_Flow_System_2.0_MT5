@@ -65,12 +65,12 @@ public:
          if(ticket <= 0) continue;
          
          // Filtrar por símbolo e magic number
-         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr->GetSymbol()) continue;
+         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr.GetSymbol()) continue;
          if(PositionGetInteger(POSITION_MAGIC) != m_params.magic_number) continue;
          
          // Obter state
          STradeState state;
-         if(!m_execution_mgr->GetTradeState(ticket, state)) {
+         if(!m_execution_mgr.GetTradeState(ticket, state)) {
             // State não encontrado - pode ser trade manual ou de sessão anterior
             continue;
          }
@@ -87,7 +87,7 @@ public:
       if(!PositionSelectByTicket(ticket)) return;
       
       double current_price = (state.direction == DIR_LONG) ? 
-                             m_symbol_mgr->GetBid() : m_symbol_mgr->GetAsk();
+                             m_symbol_mgr.GetBid() : m_symbol_mgr.GetAsk();
       
       double entry_price = PositionGetDouble(POSITION_PRICE_OPEN);
       double current_sl = PositionGetDouble(POSITION_SL);
@@ -195,13 +195,13 @@ public:
       else if(offset_pips > 0)
       {
          // Offset em pips
-         double offset_price = m_symbol_mgr->PipsToPrice(offset_pips);
+         double offset_price = m_symbol_mgr.PipsToPrice(offset_pips);
          
          new_sl = (is_long) ? (entry_price + offset_price) : (entry_price - offset_price);
       }
       
       // Normalizar preço
-      new_sl = m_symbol_mgr->NormalizePrice(new_sl);
+      new_sl = m_symbol_mgr.NormalizePrice(new_sl);
       
       // Verificar se novo SL é melhor que atual
       double current_sl = PositionGetDouble(POSITION_SL);
@@ -265,7 +265,7 @@ public:
       if(use_atr)
       {
          // Distância baseada em ATR
-         int h_atr = iATR(m_symbol_mgr->GetSymbol(), m_params.timeframe, m_params.atr_period);
+         int h_atr = iATR(m_symbol_mgr.GetSymbol(), m_params.timeframe, m_params.atr_period);
          double atr_buffer[];
          ArraySetAsSeries(atr_buffer, true);
          if(CopyBuffer(h_atr, 0, 0, 1, atr_buffer) <= 0) return;
@@ -290,7 +290,7 @@ public:
       }
       
       // Normalizar
-      new_sl = m_symbol_mgr->NormalizePrice(new_sl);
+      new_sl = m_symbol_mgr.NormalizePrice(new_sl);
       
       // Verificar se novo SL é melhor
       if(is_long)
@@ -306,7 +306,7 @@ public:
       if(m_trade.PositionModify(ticket, new_sl, current_tp))
       {
          if(m_params.debug_log_management) {
-            double sl_change_pips = m_symbol_mgr->PriceToPips(MathAbs(new_sl - current_sl));
+            double sl_change_pips = m_symbol_mgr.PriceToPips(MathAbs(new_sl - current_sl));
             
             PrintFormat("📈 Trailing Stop atualizado: ticket=%d new_sl=%.5f (+%.1f pips) profit=%.2fR",
                        ticket, new_sl, sl_change_pips, profit_r);
@@ -326,16 +326,16 @@ public:
       double close_volume = current_volume * (close_percent / 100.0);
       
       // Normalizar lote
-      close_volume = m_symbol_mgr->NormalizeLot(close_volume);
+      close_volume = m_symbol_mgr.NormalizeLot(close_volume);
       
-      if(close_volume < m_symbol_mgr->GetLotMin()) {
+      if(close_volume < m_symbol_mgr.GetLotMin()) {
          PrintFormat("⚠️ Volume de fechamento parcial muito pequeno: %.2f", close_volume);
          return false;
       }
       
       // Verificar se restará volume mínimo
       double remaining_volume = current_volume - close_volume;
-      if(remaining_volume < m_symbol_mgr->GetLotMin()) {
+      if(remaining_volume < m_symbol_mgr.GetLotMin()) {
          // Fechar tudo
          close_volume = current_volume;
       }
@@ -370,12 +370,12 @@ public:
          ulong ticket = PositionGetTicket(i);
          if(ticket <= 0) continue;
          
-         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr->GetSymbol()) continue;
+         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr.GetSymbol()) continue;
          if(PositionGetInteger(POSITION_MAGIC) != m_params.magic_number) continue;
          
          // Verificar state
          STradeState state;
-         if(m_execution_mgr->GetTradeState(ticket, state))
+         if(m_execution_mgr.GetTradeState(ticket, state))
          {
             if(state.setup_type == setup && state.direction == direction) {
                return true;
@@ -398,7 +398,7 @@ public:
          ulong ticket = PositionGetTicket(i);
          if(ticket <= 0) continue;
          
-         if(PositionGetString(POSITION_SYMBOL) == m_symbol_mgr->GetSymbol() &&
+         if(PositionGetString(POSITION_SYMBOL) == m_symbol_mgr.GetSymbol() &&
             PositionGetInteger(POSITION_MAGIC) == m_params.magic_number)
          {
             count++;
@@ -420,7 +420,7 @@ public:
          ulong ticket = PositionGetTicket(i);
          if(ticket <= 0) continue;
          
-         if(PositionGetString(POSITION_SYMBOL) == m_symbol_mgr->GetSymbol() &&
+         if(PositionGetString(POSITION_SYMBOL) == m_symbol_mgr.GetSymbol() &&
             PositionGetInteger(POSITION_MAGIC) == m_params.magic_number)
          {
             total_profit += PositionGetDouble(POSITION_PROFIT);
@@ -446,7 +446,7 @@ public:
          ulong ticket = PositionGetTicket(i);
          if(ticket <= 0) continue;
          
-         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr->GetSymbol()) continue;
+         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr.GetSymbol()) continue;
          if(PositionGetInteger(POSITION_MAGIC) != m_params.magic_number) continue;
          
          if(m_trade.PositionClose(ticket))
@@ -480,14 +480,14 @@ public:
          ulong ticket = PositionGetTicket(i);
          if(ticket <= 0) continue;
          
-         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr->GetSymbol()) continue;
+         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr.GetSymbol()) continue;
          if(PositionGetInteger(POSITION_MAGIC) != m_params.magic_number) continue;
          
          ea_positions++;
          
          double entry = PositionGetDouble(POSITION_PRICE_OPEN);
          double current_price = (PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY) ?
-                               m_symbol_mgr->GetBid() : m_symbol_mgr->GetAsk();
+                               m_symbol_mgr.GetBid() : m_symbol_mgr.GetAsk();
          double sl = PositionGetDouble(POSITION_SL);
          double tp = PositionGetDouble(POSITION_TP);
          double profit = PositionGetDouble(POSITION_PROFIT);
@@ -512,7 +512,7 @@ public:
          
          // State info
          STradeState state;
-         if(m_execution_mgr->GetTradeState(ticket, state))
+         if(m_execution_mgr.GetTradeState(ticket, state))
          {
             PrintFormat("   Setup=%s | BE=%s | TS=%s",
                        EnumToString(state.setup_type),
