@@ -69,7 +69,7 @@ Set-Variable -Name "IND_VP_COMPILED" -Value "$IND_VP_PATH\VolumeProfile_Professi
 
 # Include Files (MQH)
 Set-Variable -Name "INCLUDE_REGIME_DETECTOR" -Value "$INCLUDE_ROOT\AFS_RegimeDetector.mqh" -Option ReadOnly -Scope Global -Force
-Set-Variable -Name "INCLUDE_SETUP_MANAGER" -Value "$INCLUDE_ROOT\AFS_SetupManager.mqh" -Option ReadOnly -Scope Global -Force
+Set-Variable -Name "INCLUDE_SETUP_MANAGER" -Value "$INCLUDE_ROOT\AFS_SetupManager_v2.mqh" -Option ReadOnly -Scope Global -Force
 
 # ============================================================================
 # VALIDACAO - Verifica se paths existem
@@ -227,15 +227,15 @@ function Compile-EA-Safe {
             }
         }
         
-        # Copiar AFS_SetupManager.mqh
+        # Copiar AFS_SetupManager_v2.mqh
         if (Test-Path $INCLUDE_SETUP_MANAGER) {
             Copy-Item $INCLUDE_SETUP_MANAGER -Destination $brokerIncludePath -Force
-            $destFile = "$brokerIncludePath\AFS_SetupManager.mqh"
+            $destFile = "$brokerIncludePath\AFS_SetupManager_v2.mqh"
             if (Test-Path $destFile) {
                 $fileInfo = Get-Item $destFile
-                Write-Host "  [OK] AFS_SetupManager.mqh ($($fileInfo.Length) bytes)" -ForegroundColor Green
+                Write-Host "  [OK] AFS_SetupManager_v2.mqh ($($fileInfo.Length) bytes)" -ForegroundColor Green
             } else {
-                Write-Host "  [ERRO] Falha ao copiar AFS_SetupManager.mqh" -ForegroundColor Red
+                Write-Host "  [ERRO] Falha ao copiar AFS_SetupManager_v2.mqh" -ForegroundColor Red
             }
         }
         Write-Host ""
