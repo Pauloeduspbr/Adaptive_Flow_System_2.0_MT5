@@ -15,14 +15,14 @@
 // INCLUDES
 // ============================================================================
 #include <Trade\Trade.mqh>
-#include "Include/AFS_GlobalParameters.mqh"
-#include "Include/AFS_SymbolManager.mqh"
-#include "Include/AFS_RiskManager.mqh"
-#include "Include/AFS_TimeFilter.mqh"
-#include "Include/AFS_RegimeDetector.mqh"
-#include "Include/AFS_SetupManager_v2.mqh"
-#include "Include/AFS_TradeExecutionManager.mqh"
-#include "Include/AFS_PositionManager.mqh"
+#include <AdaptiveFlowSystem\AFS_GlobalParameters.mqh>
+#include <AdaptiveFlowSystem\AFS_SymbolManager.mqh>
+#include <AdaptiveFlowSystem\AFS_RiskManager.mqh>
+#include <AdaptiveFlowSystem\AFS_TimeFilter.mqh>
+#include <AdaptiveFlowSystem\AFS_RegimeDetector.mqh>
+#include <AdaptiveFlowSystem\AFS_SetupManager_v2.mqh>
+#include <AdaptiveFlowSystem\AFS_TradeExecutionManager.mqh>
+#include <AdaptiveFlowSystem\AFS_PositionManager.mqh>
 
 // ============================================================================
 // INPUT PARAMETERS - GENERAL

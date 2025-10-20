@@ -56,18 +56,6 @@ enum ENUM_SESSION
    SESSION_NEWYORK       // 15:00-23:00 broker time
 };
 
-// Day of Week Filter
-enum ENUM_DAY_OF_WEEK
-{
-   DAY_SUNDAY = 0,
-   DAY_MONDAY,
-   DAY_TUESDAY,
-   DAY_WEDNESDAY,
-   DAY_THURSDAY,
-   DAY_FRIDAY,
-   DAY_SATURDAY
-};
-
 // Asset Type (para ajustes específicos)
 enum ENUM_ASSET_TYPE
 {
@@ -219,79 +207,85 @@ struct SGlobalParameters
 // SETUP-SPECIFIC PARAMETERS (6 setups × 2 direções)
 // ============================================================================
 
+// Sub-estrutura para parâmetros LONG
+struct SSetupParamsLong
+{
+   // Break-Even
+   bool   be_enabled;
+   double be_activation_r;
+   double be_offset_pips;
+   bool   be_use_sl_fraction;
+   double be_offset_fraction;
+   
+   // Trailing Stop
+   bool   ts_enabled;
+   double ts_activation_r;
+   bool   ts_use_atr;
+   double ts_distance_atr;
+   double ts_step_fraction;
+   
+   // SL/TP
+   double sl_atr_multiplier;
+   double tp_rr_ratio;
+   bool   tp_use_levels;          // Usar POC/VAH/VAL como TP
+   
+   // Detection Filters (Setup-Specific)
+   double liq_sweep_pips;         // Setup A: sweep threshold (pips)
+   double liq_sl_buffer_pips;     // Setup A: SL buffer (pips)
+   double liq_di_margin;          // Setup A: +DI - -DI margin
+   double liq_wae_threshold;      // Setup A: WAE threshold (% explosion)
+   
+   double di_margin;              // Generic: Margem DI necessária
+   double wae_threshold;          // Generic: WAE threshold (% explosion)
+   double adx_min;                // ADX mínimo
+   double adx_max;                // ADX máximo (0 = sem limite)
+   double ci_max;                 // CI máximo
+   int    candle_confirmation;    // Candles de confirmação
+   double scoring_threshold;      // Score mínimo (ex: 3.0/6.0)
+};
+
+// Sub-estrutura para parâmetros SHORT
+struct SSetupParamsShort
+{
+   // Break-Even
+   bool   be_enabled;
+   double be_activation_r;
+   double be_offset_pips;
+   bool   be_use_sl_fraction;
+   double be_offset_fraction;
+   
+   // Trailing Stop
+   bool   ts_enabled;
+   double ts_activation_r;
+   bool   ts_use_atr;
+   double ts_distance_atr;
+   double ts_step_fraction;
+   
+   // SL/TP
+   double sl_atr_multiplier;
+   double tp_rr_ratio;
+   bool   tp_use_levels;
+   
+   // Detection Filters (Setup-Specific)
+   double liq_sweep_pips;         // Setup A: sweep threshold (pips)
+   double liq_sl_buffer_pips;     // Setup A: SL buffer (pips)
+   double liq_di_margin;          // Setup A: -DI - +DI margin
+   double liq_wae_threshold;      // Setup A: WAE threshold (% explosion)
+   
+   double di_margin;              // Generic: Margem DI necessária
+   double wae_threshold;          // Generic: WAE threshold (% explosion)
+   double adx_min;                // ADX mínimo
+   double adx_max;                // ADX máximo (0 = sem limite)
+   double ci_max;                 // CI máximo
+   int    candle_confirmation;    // Candles de confirmação
+   double scoring_threshold;      // Score mínimo (ex: 3.0/6.0)
+};
+
 struct SSetupParameters
 {
-   // ========== LONG PARAMETERS ==========
-   struct {
-      // Break-Even
-      bool   be_enabled;
-      double be_activation_r;
-      double be_offset_pips;
-      bool   be_use_sl_fraction;
-      double be_offset_fraction;
-      
-      // Trailing Stop
-      bool   ts_enabled;
-      double ts_activation_r;
-      bool   ts_use_atr;
-      double ts_distance_atr;
-      double ts_step_fraction;
-      
-      // SL/TP
-      double sl_atr_multiplier;
-      double tp_rr_ratio;
-      bool   tp_use_levels;          // Usar POC/VAH/VAL como TP
-      
-      // Detection Filters (Setup-Specific)
-      double liq_sweep_pips;         // Setup A: sweep threshold (pips)
-      double liq_sl_buffer_pips;     // Setup A: SL buffer (pips)
-      double liq_di_margin;          // Setup A: +DI - -DI margin
-      double liq_wae_threshold;      // Setup A: WAE threshold (% explosion)
-      
-      double di_margin;              // Generic: Margem DI necessária
-      double wae_threshold;          // Generic: WAE threshold (% explosion)
-      double adx_min;                // ADX mínimo
-      double adx_max;                // ADX máximo (0 = sem limite)
-      double ci_max;                 // CI máximo
-      int    candle_confirmation;    // Candles de confirmação
-      double scoring_threshold;      // Score mínimo (ex: 3.0/6.0)
-   } long_params;
-   
-   // ========== SHORT PARAMETERS ==========
-   struct {
-      // Break-Even
-      bool   be_enabled;
-      double be_activation_r;
-      double be_offset_pips;
-      bool   be_use_sl_fraction;
-      double be_offset_fraction;
-      
-      // Trailing Stop
-      bool   ts_enabled;
-      double ts_activation_r;
-      bool   ts_use_atr;
-      double ts_distance_atr;
-      double ts_step_fraction;
-      
-      // SL/TP
-      double sl_atr_multiplier;
-      double tp_rr_ratio;
-      bool   tp_use_levels;
-      
-      // Detection Filters (Setup-Specific)
-      double liq_sweep_pips;         // Setup A: sweep threshold (pips)
-      double liq_sl_buffer_pips;     // Setup A: SL buffer (pips)
-      double liq_di_margin;          // Setup A: -DI - +DI margin
-      double liq_wae_threshold;      // Setup A: WAE threshold (% explosion)
-      
-      double di_margin;              // Generic: Margem DI necessária
-      double wae_threshold;          // Generic: WAE threshold (% explosion)
-      double adx_min;                // ADX mínimo
-      double adx_max;                // ADX máximo (0 = sem limite)
-      double ci_max;                 // CI máximo
-      int    candle_confirmation;    // Candles de confirmação
-      double scoring_threshold;      // Score mínimo (ex: 3.0/6.0)
-   } short_params;
+   // ========== LONG/SHORT PARAMETERS ==========
+   SSetupParamsLong long_params;
+   SSetupParamsShort short_params;
    
    // ========== SHARED PARAMETERS (não variam LONG/SHORT) ==========
    
@@ -330,9 +324,16 @@ struct SSetupParameters
 // GLOBAL SINGLETON INSTANCE
 // ============================================================================
 
-// Declarar ponteiro global (será inicializado no EA principal)
-extern SGlobalParameters* g_params;
-extern SSetupParameters g_setup_params[6]; // Array de 6 setups
+// ============================================================================
+// GLOBAL PARAMETER INSTANCES
+// ============================================================================
+// IMPORTANTE: Estas variáveis NÃO são declaradas aqui com 'extern'.
+// O EA principal (AdaptiveFlowSystem_v2.mq5) deve declarar:
+//    SGlobalParameters g_params;
+//    SSetupParameters g_setup_params[6];
+// E passar ponteiros (&g_params, g_setup_params) para os managers.
+// MQL5 não permite 'extern' com ponteiros para structs.
+// ============================================================================
 
 // ============================================================================
 // HELPER FUNCTIONS
