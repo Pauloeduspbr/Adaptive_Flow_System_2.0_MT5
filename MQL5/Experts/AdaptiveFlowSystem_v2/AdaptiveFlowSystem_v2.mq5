@@ -169,8 +169,8 @@ input bool     InpSetupA_TP_UseLevels_Short = true;     // TP Use POC/VAL SHORT
 // INPUT PARAMETERS - DEBUG & LOGS
 // ============================================================================
 input group "========== DEBUG & LOGS =========="
-input bool     InpEnableDebugLogs = false;              // Enable Debug Logs
-input bool     InpDebugLogSignals = false;              // Debug: Signals
+input bool     InpEnableDebugLogs = true;               // Enable Debug Logs
+input bool     InpDebugLogSignals = true;               // Debug: Signals
 input bool     InpDebugLogExecution = false;            // Debug: Execution
 input bool     InpDebugLogManagement = false;           // Debug: BE/TS Management
 input bool     InpEnableSetupLogs = true;               // Enable Setup Logs

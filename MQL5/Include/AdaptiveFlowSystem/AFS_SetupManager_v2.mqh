@@ -207,8 +207,17 @@ public:
       double low_1 = iLow(m_symbol, m_tf, 1);
       double sweep_distance = (swing_low - low_1) / _Point;
       
+      if(m_params.debug_log_signals) {
+         PrintFormat("🔍 SETUP A LONG: swing_low=%.5f @ bar %d, low[1]=%.5f, sweep=%.1f pips (threshold=%.1f)",
+                     swing_low, swing_low_bar, low_1, sweep_distance, sweep_pips);
+      }
+      
       if(sweep_distance >= sweep_pips) {
          // SWEEP DETECTADO!
+         
+         if(m_params.debug_log_signals) {
+            PrintFormat("✅ SWEEP DETECTADO! Verificando filtros...");
+         }
          
          // FILTRO 3: +DI deve dominar -DI (comprador assumindo controle)
          if((sig.plus_di - sig.minus_di) < di_margin) {
@@ -216,9 +225,12 @@ public:
          }
          
          // FILTRO 4: WAE deve estar acima do threshold (momentum positivo)
+         // TEMPORARIAMENTE DESABILITADO - filtro muito restritivo
+         /*
          if(sig.wae_trend_up < (sig.wae_explosion * wae_threshold)) {
             return;
          }
+         */
          
          // FILTRO 5: Close[0] deve estar acima do swing_low (confirmação reversão)
          double close_0 = iClose(m_symbol, m_tf, 0);
@@ -278,9 +290,12 @@ public:
             return;
          }
          
+         // FILTRO WAE TEMPORARIAMENTE DESABILITADO
+         /*
          if(sig.wae_trend_down < (sig.wae_explosion * wae_threshold)) {
             return;
          }
+         */
          
          double close_0 = iClose(m_symbol, m_tf, 0);
          if(close_0 >= swing_high) {
