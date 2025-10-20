@@ -71,7 +71,7 @@ struct STradeState
 class CTradeExecutionManager
 {
 private:
-   SGlobalParameters* m_params;
+   SGlobalParameters& m_params;
    CSymbolManager* m_symbol_mgr;
    CRiskManager* m_risk_mgr;
    CTimeFilter* m_time_filter;
@@ -91,7 +91,7 @@ private:
    
 public:
    // ========== CONSTRUCTOR ==========
-   CTradeExecutionManager(SGlobalParameters* params, 
+   CTradeExecutionManager(SGlobalParameters& params, 
                           CSymbolManager* symbol_mgr,
                           CRiskManager* risk_mgr,
                           CTimeFilter* time_filter)

@@ -46,7 +46,7 @@ struct SRiskMetrics
 class CRiskManager
 {
 private:
-   SGlobalParameters* m_params;
+   SGlobalParameters& m_params;
    CSymbolManager* m_symbol_mgr;
    
    SRiskMetrics m_metrics;
@@ -63,7 +63,7 @@ private:
    
 public:
    // ========== CONSTRUCTOR ==========
-   CRiskManager(SGlobalParameters* params, CSymbolManager* symbol_mgr)
+   CRiskManager(SGlobalParameters& params, CSymbolManager* symbol_mgr)
    {
       m_params = params;
       m_symbol_mgr = symbol_mgr;

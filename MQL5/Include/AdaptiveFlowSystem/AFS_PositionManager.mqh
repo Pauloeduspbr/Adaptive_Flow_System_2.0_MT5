@@ -22,8 +22,8 @@
 class CPositionManager
 {
 private:
-   SGlobalParameters* m_params;
-   SSetupParameters* m_setup_params; // Array [6]
+   SGlobalParameters& m_params;
+   SSetupParameters& m_setup_params; // Array [6]
    CSymbolManager* m_symbol_mgr;
    CTradeExecutionManager* m_execution_mgr;
    
@@ -31,8 +31,8 @@ private:
    
 public:
    // ========== CONSTRUCTOR ==========
-   CPositionManager(SGlobalParameters* params,
-                    SSetupParameters* setup_params,
+   CPositionManager(SGlobalParameters& params,
+                    SSetupParameters& setup_params,
                     CSymbolManager* symbol_mgr,
                     CTradeExecutionManager* execution_mgr)
    {

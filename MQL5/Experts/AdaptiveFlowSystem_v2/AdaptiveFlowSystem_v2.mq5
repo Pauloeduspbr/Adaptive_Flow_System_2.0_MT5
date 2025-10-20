@@ -228,25 +228,25 @@ int OnInit()
    }
    
    // ========== STEP 4: INITIALIZE MANAGERS ==========
-   g_symbol_mgr = new CSymbolManager(&g_params);
+   g_symbol_mgr = new CSymbolManager(g_params.symbol);
    if(g_symbol_mgr == NULL) {
       Print("❌ ERROR: Failed to create SymbolManager");
       return INIT_FAILED;
    }
    
-   g_risk_mgr = new CRiskManager(&g_params, g_symbol_mgr);
+   g_risk_mgr = new CRiskManager(g_params, g_symbol_mgr);
    if(g_risk_mgr == NULL) {
       Print("❌ ERROR: Failed to create RiskManager");
       return INIT_FAILED;
    }
    
-   g_time_filter = new CTimeFilter(&g_params);
+   g_time_filter = new CTimeFilter(g_params);
    if(g_time_filter == NULL) {
       Print("❌ ERROR: Failed to create TimeFilter");
       return INIT_FAILED;
    }
    
-   g_regime_detector = new CRegimeDetector(&g_params, g_h_adx, g_h_ci, g_h_squeeze, 
+   g_regime_detector = new CRegimeDetector(g_params, g_h_adx, g_h_ci, g_h_squeeze, 
                                            g_h_atr, g_h_wae, g_h_vp,
                                            g_params.symbol, g_params.timeframe);
    if(g_regime_detector == NULL) {
@@ -254,21 +254,21 @@ int OnInit()
       return INIT_FAILED;
    }
    
-   g_setup_mgr = new CSetupManager(&g_params, g_setup_params, 
+   g_setup_mgr = new CSetupManager(g_params, g_setup_params[0], 
                                    g_params.symbol, g_params.timeframe);
    if(g_setup_mgr == NULL) {
       Print("❌ ERROR: Failed to create SetupManager");
       return INIT_FAILED;
    }
    
-   g_execution_mgr = new CTradeExecutionManager(&g_params, g_symbol_mgr, 
+   g_execution_mgr = new CTradeExecutionManager(g_params, g_symbol_mgr, 
                                                 g_risk_mgr, g_time_filter);
    if(g_execution_mgr == NULL) {
       Print("❌ ERROR: Failed to create TradeExecutionManager");
       return INIT_FAILED;
    }
    
-   g_position_mgr = new CPositionManager(&g_params, g_setup_params, 
+   g_position_mgr = new CPositionManager(g_params, g_setup_params[0], 
                                          g_symbol_mgr, g_execution_mgr);
    if(g_position_mgr == NULL) {
       Print("❌ ERROR: Failed to create PositionManager");
@@ -363,7 +363,7 @@ void OnTick()
    }
    
    // ========== STAGE 4: SETUP EVALUATION ==========
-   SSetupSignal signals[];
+   STradeSignal signals[];
    int signal_count = 0;
    
    g_setup_mgr.EvaluateAllSetups(regime_signals, g_current_regime, 

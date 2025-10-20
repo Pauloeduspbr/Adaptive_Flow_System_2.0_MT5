@@ -18,17 +18,17 @@
 class CTimeFilter
 {
 private:
-   SGlobalParameters* m_params;
+   SGlobalParameters& m_params;
    
    ENUM_SESSION m_current_session;
    datetime m_session_last_check;
    
 public:
    // ========== CONSTRUCTOR ==========
-   CTimeFilter(SGlobalParameters* params)
+   CTimeFilter(SGlobalParameters& params)
    {
       m_params = params;
-      m_current_session = SESSION_NONE;
+      m_current_session = SESSION_ASIAN;
       m_session_last_check = 0;
    }
    

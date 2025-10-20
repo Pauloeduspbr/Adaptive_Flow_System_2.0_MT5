@@ -112,7 +112,7 @@ public:
 class CRegimeDetector
 {
 private:
-   SGlobalParameters* m_params;  // 🔥 Global parameters reference
+   SGlobalParameters& m_params;  // 🔥 Global parameters reference
    
    int m_h_adx, m_h_ci, m_h_sq, m_h_atr, m_h_wae, m_h_vp;
    string m_symbol;
@@ -126,7 +126,7 @@ private:
    double m_cache_confidence;
    
 public:
-   CRegimeDetector(SGlobalParameters* params,
+   CRegimeDetector(SGlobalParameters& params,
                    const int h_adx,
                    const int h_ci,
                    const int h_squeeze,

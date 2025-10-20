@@ -51,9 +51,11 @@ enum ENUM_ORDER_TYPE_SIGNAL
 // Trading Sessions
 enum ENUM_SESSION
 {
-   SESSION_ASIAN = 0,    // 02:00-08:00 broker time
-   SESSION_LONDON,       // 09:00-17:00 broker time
-   SESSION_NEWYORK       // 15:00-23:00 broker time
+   SESSION_NONE = -1,                 // Fora de sessão
+   SESSION_ASIAN = 0,                 // 02:00-08:00 broker time
+   SESSION_LONDON,                    // 09:00-17:00 broker time
+   SESSION_NEWYORK,                   // 15:00-23:00 broker time
+   SESSION_OVERLAP_LONDON_NY          // 15:00-17:00 (overlap)
 };
 
 // Asset Type (para ajustes específicos)

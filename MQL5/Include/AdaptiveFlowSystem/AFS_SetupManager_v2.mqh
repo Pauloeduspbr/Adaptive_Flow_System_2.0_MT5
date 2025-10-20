@@ -16,9 +16,9 @@
 // SIGNAL OUTPUT STRUCTURE
 // ============================================================================
 
-struct SSetupSignal
+struct STradeSignal
 {
-   ENUM_SETUP_TYPE          setup;
+   ENUM_SETUP_TYPE          setup_type;        // Renamed from 'setup'
    ENUM_SIGNAL_DIRECTION    direction;
    ENUM_ORDER_TYPE_SIGNAL   order_type;
    
@@ -26,8 +26,15 @@ struct SSetupSignal
    double                   sl_price;
    double                   tp_price;
    
-   double                   confidence;   // 0..1
-   string                   reason;       // Debug rationale
+   double                   confidence;        // 0..1
+   double                   rr_ratio;          // Risk:Reward ratio
+   int                      priority;          // Setup priority (A=20, B=18, ...)
+   
+   double                   pending_expiration_bars;  // Timeout for pending orders
+   datetime                 signal_time;       // When signal was generated
+   int                      signal_bar_index;  // Bar index
+   
+   string                   comment;           // Renamed from 'reason'
    bool                     is_valid;
 };
 
@@ -38,8 +45,8 @@ struct SSetupSignal
 class CSetupManager
 {
 private:
-   SGlobalParameters* m_params;
-   SSetupParameters* m_setup_params;  // Array [6]
+   SGlobalParameters& m_params;
+   SSetupParameters& m_setup_params;  // Array [6]
    
    string m_symbol;
    ENUM_TIMEFRAMES m_tf;
@@ -54,8 +61,8 @@ private:
    
 public:
    // ========== CONSTRUCTOR ==========
-   CSetupManager(SGlobalParameters* params,
-                 SSetupParameters* setup_params,
+   CSetupManager(SGlobalParameters& params,
+                 SSetupParameters& setup_params,
                  const string symbol = "",
                  const ENUM_TIMEFRAMES tf = PERIOD_CURRENT)
    {
@@ -83,7 +90,7 @@ public:
    void EvaluateAllSetups(const SRegimeSignals &regime_signals,
                          ENUM_MARKET_REGIME current_regime,
                          double regime_confidence,
-                         SSetupSignal &signals[],
+                         STradeSignal &signals[],
                          int &signal_count)
    {
       // Avaliar todos os 6 setups e retornar sinais válidos
@@ -101,12 +108,12 @@ public:
       }
       
       // Avaliar cada setup (A-F)
-      SSetupSignal sig_a_long, sig_a_short;
-      SSetupSignal sig_b_long, sig_b_short;
-      SSetupSignal sig_c_long, sig_c_short;
-      SSetupSignal sig_d_long, sig_d_short;
-      SSetupSignal sig_e_long, sig_e_short;
-      SSetupSignal sig_f_long, sig_f_short;
+      STradeSignal sig_a_long, sig_a_short;
+      STradeSignal sig_b_long, sig_b_short;
+      STradeSignal sig_c_long, sig_c_short;
+      STradeSignal sig_d_long, sig_d_short;
+      STradeSignal sig_e_long, sig_e_short;
+      STradeSignal sig_f_long, sig_f_short;
       
       // Setup A: Liquidity Raid
       if(m_params->enable_setup_a) {
@@ -157,7 +164,7 @@ public:
    
    // ========== HELPER: ADD SIGNAL ==========
    
-   void AddSignal(SSetupSignal &signals[], int &count, const SSetupSignal &signal)
+   void AddSignal(STradeSignal &signals[], int &count, const STradeSignal &signal)
    {
       ArrayResize(signals, count + 1);
       signals[count] = signal;
@@ -170,14 +177,14 @@ public:
    
    void TrySetup_LiquidityRaid(const SRegimeSignals &sig,
                                ENUM_MARKET_REGIME regime,
-                               SSetupSignal &out_long,
-                               SSetupSignal &out_short)
+                               STradeSignal &out_long,
+                               STradeSignal &out_short)
    {
       // Inicializar outputs
       ZeroMemory(out_long);
       ZeroMemory(out_short);
-      out_long.setup = SETUP_A_LIQUIDITY_RAID;
-      out_short.setup = SETUP_A_LIQUIDITY_RAID;
+      out_long.setup_type = SETUP_A_LIQUIDITY_RAID;
+      out_short.setup_type = SETUP_A_LIQUIDITY_RAID;
       out_long.direction = SIGNAL_LONG;
       out_short.direction = SIGNAL_SHORT;
       out_long.order_type = ORDER_TYPE_MARKET;
@@ -260,7 +267,7 @@ public:
          }
          
          out_long.confidence = 0.75; // Configuração inicial
-         out_long.reason = StringFormat("LONG Liquidity Raid: Sweep %.1f pips below swing_low[%d]=%.5f",
+         out_long.comment = StringFormat("LONG Liquidity Raid: Sweep %.1f pips below swing_low[%d]=%.5f",
                                         sweep_distance, swing_low_bar, swing_low);
          out_long.is_valid = true;
       }
@@ -319,7 +326,7 @@ public:
          }
          
          out_short.confidence = 0.75;
-         out_short.reason = StringFormat("SHORT Liquidity Raid: Sweep %.1f pips above swing_high[%d]=%.5f",
+         out_short.comment = StringFormat("SHORT Liquidity Raid: Sweep %.1f pips above swing_high[%d]=%.5f",
                                          sweep_distance_short, swing_high_bar, swing_high);
          out_short.is_valid = true;
       }
@@ -331,8 +338,8 @@ public:
    
    void TrySetup_AMD_Breakout(const SRegimeSignals &sig,
                               ENUM_MARKET_REGIME regime,
-                              SSetupSignal &out_long,
-                              SSetupSignal &out_short)
+                              STradeSignal &out_long,
+                              STradeSignal &out_short)
    {
       // TODO: Implementar lógica completa
       // Placeholder: sempre retorna inválido
@@ -356,8 +363,8 @@ public:
    
    void TrySetup_SessionMomentum(const SRegimeSignals &sig,
                                  ENUM_MARKET_REGIME regime,
-                                 SSetupSignal &out_long,
-                                 SSetupSignal &out_short)
+                                 STradeSignal &out_long,
+                                 STradeSignal &out_short)
    {
       ZeroMemory(out_long);
       ZeroMemory(out_short);
@@ -374,8 +381,8 @@ public:
    
    void TrySetup_MeanReversion(const SRegimeSignals &sig,
                                ENUM_MARKET_REGIME regime,
-                               SSetupSignal &out_long,
-                               SSetupSignal &out_short)
+                               STradeSignal &out_long,
+                               STradeSignal &out_short)
    {
       ZeroMemory(out_long);
       ZeroMemory(out_short);
@@ -392,8 +399,8 @@ public:
    
    void TrySetup_SqueezeBreakout(const SRegimeSignals &sig,
                                  ENUM_MARKET_REGIME regime,
-                                 SSetupSignal &out_long,
-                                 SSetupSignal &out_short)
+                                 STradeSignal &out_long,
+                                 STradeSignal &out_short)
    {
       ZeroMemory(out_long);
       ZeroMemory(out_short);
@@ -410,8 +417,8 @@ public:
    
    void TrySetup_Continuation(const SRegimeSignals &sig,
                               ENUM_MARKET_REGIME regime,
-                              SSetupSignal &out_long,
-                              SSetupSignal &out_short)
+                              STradeSignal &out_long,
+                              STradeSignal &out_short)
    {
       ZeroMemory(out_long);
       ZeroMemory(out_short);
