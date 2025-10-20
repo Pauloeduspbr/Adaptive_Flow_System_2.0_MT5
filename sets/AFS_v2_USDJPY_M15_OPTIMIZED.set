@@ -88,11 +88,11 @@ InpEnableSetupF=false||false||0||true||N
 InpPendingTimeoutBars=10||5||10||20||5
 InpCancelPendingOnRegimeChange=true||false||0||true||N
 
-;--- SETUP A LONG (🔥 DI MARGIN = -5.0 = MAIS PERMISSIVO)
+;--- SETUP A LONG (🔥 DI MARGIN = -20.0 = ULTRA PERMISSIVO)
 InpSetupA_LiqLookbackBars=20||10||20||30||5
 InpSetupA_LiqSweepPips_Long=2.0||1.0||2.0||5.0||0.5
 InpSetupA_LiqSLBufferPips_Long=8.0||5.0||8.0||15.0||2.0
-InpSetupA_LiqDIMargin_Long=-5.0||-10.0||-5.0||5.0||2.5
+InpSetupA_LiqDIMargin_Long=-20.0||-30.0||-20.0||5.0||2.5
 InpSetupA_LiqWAEThreshold_Long=0.40||0.2||0.4||0.8||0.1
 InpSetupA_BE_ActivationR_Long=0.5||0.3||0.5||1.0||0.1
 InpSetupA_BE_OffsetPips_Long=5.0||2.0||5.0||10.0||2.0
@@ -102,10 +102,10 @@ InpSetupA_SL_ATRMultiplier_Long=1.5||1.0||1.5||3.0||0.5
 InpSetupA_TP_RRRatio_Long=5.0||2.0||5.0||10.0||1.0
 InpSetupA_TP_UseLevels_Long=true||false||0||true||N
 
-;--- SETUP A SHORT (🔥 DI MARGIN = -5.0 = MAIS PERMISSIVO)
+;--- SETUP A SHORT (🔥 DI MARGIN = -20.0 = ULTRA PERMISSIVO)
 InpSetupA_LiqSweepPips_Short=2.0||1.0||2.0||5.0||0.5
 InpSetupA_LiqSLBufferPips_Short=8.0||5.0||8.0||15.0||2.0
-InpSetupA_LiqDIMargin_Short=-5.0||-10.0||-5.0||5.0||2.5
+InpSetupA_LiqDIMargin_Short=-20.0||-30.0||-20.0||5.0||2.5
 InpSetupA_LiqWAEThreshold_Short=0.40||0.2||0.4||0.8||0.1
 InpSetupA_BE_ActivationR_Short=0.5||0.3||0.5||1.0||0.1
 InpSetupA_BE_OffsetPips_Short=5.0||2.0||5.0||10.0||2.0

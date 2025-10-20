@@ -141,7 +141,7 @@ input int      InpSetupA_LiqLookbackBars = 20;          // Lookback Bars (swing 
 input group "--- Setup A LONG ---"
 input double   InpSetupA_LiqSweepPips_Long = 2.0;       // Sweep Threshold (pips) LONG
 input double   InpSetupA_LiqSLBufferPips_Long = 8.0;    // SL Buffer (pips) LONG
-input double   InpSetupA_LiqDIMargin_Long = -5.0;       // DI Margin LONG (-5 = permite +DI até 5 pontos abaixo de -DI)
+input double   InpSetupA_LiqDIMargin_Long = -20.0;      // DI Margin LONG (-20 = permite +DI até 20 pontos abaixo de -DI)
 input double   InpSetupA_LiqWAEThreshold_Long = 0.40;   // WAE Threshold (% explosion) LONG [DESABILITADO]
 input double   InpSetupA_BE_ActivationR_Long = 0.5;     // BE Activation (R) LONG
 input double   InpSetupA_BE_OffsetPips_Long = 5.0;      // BE Offset (pips) LONG
@@ -155,7 +155,7 @@ input bool     InpSetupA_TP_UseLevels_Long = true;      // TP Use POC/VAL LONG
 input group "--- Setup A SHORT ---"
 input double   InpSetupA_LiqSweepPips_Short = 2.0;      // Sweep Threshold (pips) SHORT
 input double   InpSetupA_LiqSLBufferPips_Short = 8.0;   // SL Buffer (pips) SHORT
-input double   InpSetupA_LiqDIMargin_Short = -5.0;      // DI Margin SHORT (-5 = permite -DI até 5 pontos abaixo de +DI)
+input double   InpSetupA_LiqDIMargin_Short = -20.0;     // DI Margin SHORT (-20 = permite -DI até 20 pontos abaixo de +DI)
 input double   InpSetupA_LiqWAEThreshold_Short = 0.40;  // WAE Threshold (% explosion) SHORT [DESABILITADO]
 input double   InpSetupA_BE_ActivationR_Short = 0.5;    // BE Activation (R) SHORT
 input double   InpSetupA_BE_OffsetPips_Short = 5.0;     // BE Offset (pips) SHORT
