@@ -1,0 +1,168 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "MQL5: Build + Backtest (arquivo atual)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-ExecutionPolicy", "Bypass",
+        "-File", "${workspaceFolder}/scripts/mql5-automation.ps1",
+        "-Action", "Backtest",
+        "-Mql5Root", "${config:mql5.mql5Root}",
+        "-SourceFile", "${file}",
+        "-MetaEditorPath", "${config:mql5.metaEditorPath}",
+        "-TerminalPath", "${config:mql5.terminalPath}",
+        "-WorkspaceRoot", "${workspaceFolder}",
+        "-Symbol", "${input:symbol}",
+        "-Period", "${input:period}",
+        "-From", "${input:fromDate}",
+        "-To", "${input:toDate}",
+        "-Deposit", "${input:deposit}",
+        "-Currency", "USD",
+        "-Leverage", "100",
+        "-ExpertParameters", "${input:presetSetPath}",
+        "-ReportPath", "${workspaceFolder}\\reports\\${fileBasenameNoExtension}_${input:symbol}_${input:period}_backtest.html"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "MQL5: Backtest (EX5 compilado)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-ExecutionPolicy", "Bypass",
+        "-File", "${workspaceFolder}/scripts/run-backtest.ps1",
+        "-Mql5Root", "${config:mql5.mql5Root}",
+        "-WorkspaceRoot", "${workspaceFolder}",
+        "-MetaEditorPath", "${config:mql5.metaEditorPath}",
+        "-TerminalPath", "${config:mql5.terminalPath}",
+        "-Expert", "Experts\\AdaptiveFlowSystem_v2\\AdaptiveFlowSystem_v2.ex5",
+        "-SkipIncludes",
+        "-SkipIndicatorBuild",
+        "-Symbol", "${input:symbol}",
+        "-Period", "${input:period}",
+        "-From", "${input:fromDate}",
+        "-To", "${input:toDate}",
+        "-Deposit", "${input:deposit}",
+        "-Currency", "USD",
+        "-Leverage", "100",
+        "-ReportPath", "${workspaceFolder}\\reports\\AFS_v2_${input:symbol}_${input:period}_backtest.html"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "MQL5: Build + Optimize (arquivo atual)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-ExecutionPolicy", "Bypass",
+        "-File", "${workspaceFolder}/scripts/mql5-automation.ps1",
+        "-Action", "Optimize",
+        "-Mql5Root", "${config:mql5.mql5Root}",
+        "-SourceFile", "${file}",
+        "-MetaEditorPath", "${config:mql5.metaEditorPath}",
+        "-TerminalPath", "${config:mql5.terminalPath}",
+        "-WorkspaceRoot", "${workspaceFolder}",
+        "-Symbol", "${input:symbol}",
+        "-Period", "${input:period}",
+        "-From", "${input:fromDate}",
+        "-To", "${input:toDate}",
+        "-Deposit", "${input:deposit}",
+        "-Currency", "USD",
+        "-Leverage", "100",
+        "-Criterion", "${input:criterion}",
+        "-ExpertParameters", "${input:presetSetPath}",
+        "-ReportPath", "${workspaceFolder}\\reports\\${fileBasenameNoExtension}_${input:symbol}_${input:period}_opt.html"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "MQL5: Optimize (EX5 compilado)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-ExecutionPolicy", "Bypass",
+        "-File", "${workspaceFolder}/scripts/run-optimization.ps1",
+        "-Mql5Root", "${config:mql5.mql5Root}",
+        "-WorkspaceRoot", "${workspaceFolder}",
+        "-MetaEditorPath", "${config:mql5.metaEditorPath}",
+        "-TerminalPath", "${config:mql5.terminalPath}",
+        "-Expert", "Experts\\AdaptiveFlowSystem_v2\\AdaptiveFlowSystem_v2.ex5",
+        "-SkipIncludes",
+        "-SkipIndicatorBuild",
+        "-Symbol", "${input:symbol}",
+        "-Period", "${input:period}",
+        "-From", "${input:fromDate}",
+        "-To", "${input:toDate}",
+        "-Deposit", "${input:deposit}",
+        "-Currency", "USD",
+        "-Leverage", "100",
+        "-Criterion", "${input:criterion}",
+        "-ExpertParameters", "${input:presetSetPath}",
+        "-ReportPath", "${workspaceFolder}\\reports\\AFS_v2_${input:symbol}_${input:period}_opt.html"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "MQL5: Diagnóstico do Sistema",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-ExecutionPolicy", "Bypass",
+        "-File", "${workspaceFolder}/scripts/diagnose-mt5.ps1",
+        "-Mql5Root", "${config:mql5.mql5Root}",
+        "-TerminalPath", "${config:mql5.terminalPath}",
+        "-Symbol", "${input:symbol}"
+      ],
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "symbol",
+      "type": "pickString",
+      "description": "Símbolo para testar",
+      "options": ["EURUSD", "USDJPY", "GBPUSD", "XAUUSD", "US100", "WIN$N"],
+      "default": "USDJPY"
+    },
+    {
+      "id": "period",
+      "type": "pickString",
+      "description": "Timeframe",
+      "options": ["M1", "M5", "M15", "M30", "H1", "H4", "D1"],
+      "default": "M15"
+    },
+    {
+      "id": "fromDate",
+      "type": "promptString",
+      "description": "Data inicial (YYYY.MM.DD)",
+      "default": "2024.01.01"
+    },
+    {
+      "id": "toDate",
+      "type": "promptString",
+      "description": "Data final (YYYY.MM.DD)",
+      "default": "2024.06.01"
+    },
+    {
+      "id": "deposit",
+      "type": "promptString",
+      "description": "Depósito inicial",
+      "default": "10000"
+    },
+    {
+      "id": "criterion",
+      "type": "pickString",
+      "description": "Critério de otimização (0=Balance, 1=PF, 2=Exp.Payoff, 3=DD min, 4=Recovery, 5=Sharpe, 6=Custom)",
+      "options": ["0", "1", "2", "3", "4", "5", "6"],
+      "default": "0"
+    },
+    {
+      "id": "presetSetPath",
+      "type": "promptString",
+      "description": "Caminho para o .set (opcional). Pode ser absoluto ou relativo ao MQL5 (ex.: MQL5\\Profiles\\Tester\\MeuEA.set). Deixe vazio para não usar.",
+      "default": ""
+    }
+  ]
+}
