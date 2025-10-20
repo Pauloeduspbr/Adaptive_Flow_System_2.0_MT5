@@ -282,6 +282,13 @@ public:
          out_long.comment = StringFormat("LONG Liquidity Raid: Sweep %.1f pips below swing_low[%d]=%.5f",
                                         sweep_distance, swing_low_bar, swing_low);
          out_long.is_valid = true;
+         
+         // 🔥 LOG CRÍTICO: Sinal LONG foi gerado!
+         if(m_params.debug_log_signals) {
+            PrintFormat("✅✅✅ SINAL LONG GERADO! Entry=%.5f, SL=%.5f, TP=%.5f, Sweep=%.1f pips, +DI=%.2f, -DI=%.2f",
+                       out_long.entry_price, out_long.sl_price, out_long.tp_price,
+                       sweep_distance, sig.plus_di, sig.minus_di);
+         }
       }
       
       // DETECÇÃO SHORT: Similar mas invertido (BSL - Buy-Side Liquidity)
@@ -365,6 +372,13 @@ public:
          out_short.comment = StringFormat("SHORT Liquidity Raid: Sweep %.1f pips above swing_high[%d]=%.5f",
                                          sweep_distance_short, swing_high_bar, swing_high);
          out_short.is_valid = true;
+         
+         // 🔥 LOG CRÍTICO: Sinal SHORT foi gerado!
+         if(m_params.debug_log_signals) {
+            PrintFormat("✅✅✅ SINAL SHORT GERADO! Entry=%.5f, SL=%.5f, TP=%.5f, Sweep=%.1f pips, +DI=%.2f, -DI=%.2f",
+                       out_short.entry_price, out_short.sl_price, out_short.tp_price,
+                       sweep_distance_short, sig.plus_di, sig.minus_di);
+         }
       }
    }
    
