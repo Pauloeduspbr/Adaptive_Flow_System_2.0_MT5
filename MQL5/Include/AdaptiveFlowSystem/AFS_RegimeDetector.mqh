@@ -112,7 +112,7 @@ public:
 class CRegimeDetector
 {
 private:
-   SGlobalParameters& m_params;  // 🔥 Global parameters reference
+   SGlobalParameters m_params;  // Direct struct copy (MQL5 doesn't support & references as members)
    
    int m_h_adx, m_h_ci, m_h_sq, m_h_atr, m_h_wae, m_h_vp;
    string m_symbol;
@@ -126,7 +126,7 @@ private:
    double m_cache_confidence;
    
 public:
-   CRegimeDetector(SGlobalParameters& params,
+   CRegimeDetector(const SGlobalParameters &params,
                    const int h_adx,
                    const int h_ci,
                    const int h_squeeze,
@@ -136,7 +136,7 @@ public:
                    const string symbol = "",
                    const ENUM_TIMEFRAMES tf = PERIOD_CURRENT)
    {
-      m_params = params;
+      m_params = params;  // Struct copy assignment
       m_h_adx = h_adx; m_h_ci = h_ci; m_h_sq = h_squeeze; m_h_atr = h_atr; m_h_wae = h_wae; m_h_vp = h_vp;
       m_symbol = (symbol == "" ? _Symbol : symbol);
       m_tf = tf;

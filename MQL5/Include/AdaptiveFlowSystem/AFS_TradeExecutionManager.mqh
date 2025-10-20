@@ -71,7 +71,7 @@ struct STradeState
 class CTradeExecutionManager
 {
 private:
-   SGlobalParameters& m_params;
+   SGlobalParameters m_params;  // Direct struct copy (MQL5 doesn't support & references as members)
    CSymbolManager* m_symbol_mgr;
    CRiskManager* m_risk_mgr;
    CTimeFilter* m_time_filter;
@@ -91,12 +91,12 @@ private:
    
 public:
    // ========== CONSTRUCTOR ==========
-   CTradeExecutionManager(SGlobalParameters& params, 
+   CTradeExecutionManager(const SGlobalParameters &params, 
                           CSymbolManager* symbol_mgr,
                           CRiskManager* risk_mgr,
                           CTimeFilter* time_filter)
    {
-      m_params = params;
+      m_params = params;  // Struct copy assignment
       m_symbol_mgr = symbol_mgr;
       m_risk_mgr = risk_mgr;
       m_time_filter = time_filter;
@@ -196,7 +196,7 @@ public:
       {
          if(!m_trade_states[i].is_active) continue;
          
-         if(m_trade_states[i].order_type != ORDER_TYPE_PENDING) continue;
+         if(m_trade_states[i].order_type != ORDER_SIGNAL_PENDING) continue;
          
          ulong ticket = m_trade_states[i].ticket;
          
@@ -206,7 +206,7 @@ public:
          }
          
          // Check 1: Expiração por bars
-         int current_bar = iBars(m_symbol_mgr.GetSymbol(), m_params.timeframe, 0);
+         int current_bar = iBars(m_symbol_mgr->GetSymbol(), m_params.timeframe);
          int bars_elapsed = current_bar - m_trade_states[i].expiration_bar;
          
          if(bars_elapsed >= m_params.pending_timeout_bars) {
@@ -348,11 +348,11 @@ public:
          if(!m_trade_states[i].is_active) continue;
          
          // Conflito: LONG vs SHORT
-         if(direction == SIGNAL_LONG && m_trade_states[i].direction == SIGNAL_SHORT) {
+         if(direction == DIR_LONG && m_trade_states[i].direction == DIR_SHORT) {
             return true;
          }
          
-         if(direction == SIGNAL_SHORT && m_trade_states[i].direction == SIGNAL_LONG) {
+         if(direction == DIR_SHORT && m_trade_states[i].direction == DIR_LONG) {
             return true;
          }
       }
@@ -468,11 +468,11 @@ public:
       // Executar ordem
       ulong ticket = 0;
       
-      if(signal.order_type == ORDER_TYPE_MARKET)
+      if(signal.order_type == ORDER_SIGNAL_MARKET)
       {
          ticket = ExecuteMarketOrder(signal, lots);
       }
-      else if(signal.order_type == ORDER_TYPE_PENDING)
+      else if(signal.order_type == ORDER_SIGNAL_PENDING)
       {
          ticket = ExecutePendingOrder(signal, lots);
       }
@@ -497,9 +497,9 @@ public:
    {
       // Executar ordem a mercado
       
-      ENUM_ORDER_TYPE order_type = (signal.direction == SIGNAL_LONG) ? ORDER_TYPE_BUY : ORDER_TYPE_SELL;
+      ENUM_ORDER_TYPE order_type = (signal.direction == DIR_LONG) ? ORDER_TYPE_BUY : ORDER_TYPE_SELL;
       
-      double entry = (signal.direction == SIGNAL_LONG) ? 
+      double entry = (signal.direction == DIR_LONG) ? 
                      m_symbol_mgr.GetAsk() : m_symbol_mgr.GetBid();
       
       if(m_trade.PositionOpen(m_symbol_mgr.GetSymbol(),
@@ -539,7 +539,7 @@ public:
       
       ENUM_ORDER_TYPE order_type;
       
-      if(signal.direction == SIGNAL_LONG)
+      if(signal.direction == DIR_LONG)
       {
          // LONG: Buy Stop (entry acima do preço) ou Buy Limit (entry abaixo)
          double current_price = m_symbol_mgr.GetAsk();
@@ -626,7 +626,7 @@ public:
       m_trade_states[slot].initial_tp = signal.tp_price;
       m_trade_states[slot].current_sl = signal.sl_price;
       m_trade_states[slot].current_tp = signal.tp_price;
-      m_trade_states[slot].expiration_bar = iBars(m_symbol_mgr.GetSymbol(), m_params.timeframe, 0);
+      m_trade_states[slot].expiration_bar = iBars(m_symbol_mgr->GetSymbol(), m_params.timeframe);
       m_trade_states[slot].is_active = true;
       
       if(slot >= m_trade_state_count) {

@@ -46,7 +46,7 @@ struct SRiskMetrics
 class CRiskManager
 {
 private:
-   SGlobalParameters& m_params;
+   SGlobalParameters m_params;  // Direct struct copy (MQL5 doesn't support & references as members)
    CSymbolManager* m_symbol_mgr;
    
    SRiskMetrics m_metrics;
@@ -63,9 +63,9 @@ private:
    
 public:
    // ========== CONSTRUCTOR ==========
-   CRiskManager(SGlobalParameters& params, CSymbolManager* symbol_mgr)
+   CRiskManager(const SGlobalParameters &params, CSymbolManager* symbol_mgr)
    {
-      m_params = params;
+      m_params = params;  // Struct copy assignment
       m_symbol_mgr = symbol_mgr;
       
       // Initialize metrics

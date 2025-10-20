@@ -45,8 +45,8 @@ struct STradeSignal
 class CSetupManager
 {
 private:
-   SGlobalParameters& m_params;
-   SSetupParameters& m_setup_params;  // Array [6]
+   SGlobalParameters m_params;       // Direct struct copy (MQL5 doesn't support & references as members)
+   SSetupParameters m_setup_params;  // Direct struct copy
    
    string m_symbol;
    ENUM_TIMEFRAMES m_tf;
@@ -61,18 +61,18 @@ private:
    
 public:
    // ========== CONSTRUCTOR ==========
-   CSetupManager(SGlobalParameters& params,
-                 SSetupParameters& setup_params,
+   CSetupManager(const SGlobalParameters &params,
+                 const SSetupParameters &setup_params,
                  const string symbol = "",
                  const ENUM_TIMEFRAMES tf = PERIOD_CURRENT)
    {
-      m_params = params;
-      m_setup_params = setup_params;
+      m_params = params;             // Struct copy assignment
+      m_setup_params = setup_params; // Struct copy assignment
       m_symbol = (symbol == "" ? _Symbol : symbol);
       m_tf = tf;
       
       // Initialize ATR handle
-      m_h_atr = iATR(m_symbol, m_tf, m_params->atr_period);
+      m_h_atr = iATR(m_symbol, m_tf, m_params.atr_period);  // Changed -> to .
       
       // Initialize debounce
       ArrayInitialize(m_last_signal_time, 0);
@@ -99,10 +99,10 @@ public:
       signal_count = 0;
       
       // Verificar se regime tem confidence mínima
-      if(regime_confidence < m_params->regime_confidence_min) {
-         if(m_params->debug_log_signals) {
+      if(regime_confidence < m_params.regime_confidence_min) {
+         if(m_params.debug_log_signals) {
             PrintFormat("🚫 Regime confidence baixa: %.2f < %.2f", 
-                       regime_confidence, m_params->regime_confidence_min);
+                       regime_confidence, m_params.regime_confidence_min);
          }
          return;
       }
@@ -116,48 +116,48 @@ public:
       STradeSignal sig_f_long, sig_f_short;
       
       // Setup A: Liquidity Raid
-      if(m_params->enable_setup_a) {
+      if(m_params.enable_setup_a) {
          TrySetup_LiquidityRaid(regime_signals, current_regime, sig_a_long, sig_a_short);
          if(sig_a_long.is_valid) AddSignal(signals, signal_count, sig_a_long);
          if(sig_a_short.is_valid) AddSignal(signals, signal_count, sig_a_short);
       }
       
       // Setup B: AMD Breakout
-      if(m_params->enable_setup_b) {
+      if(m_params.enable_setup_b) {
          TrySetup_AMD_Breakout(regime_signals, current_regime, sig_b_long, sig_b_short);
          if(sig_b_long.is_valid) AddSignal(signals, signal_count, sig_b_long);
          if(sig_b_short.is_valid) AddSignal(signals, signal_count, sig_b_short);
       }
       
       // Setup C: Session Momentum
-      if(m_params->enable_setup_c) {
+      if(m_params.enable_setup_c) {
          TrySetup_SessionMomentum(regime_signals, current_regime, sig_c_long, sig_c_short);
          if(sig_c_long.is_valid) AddSignal(signals, signal_count, sig_c_long);
          if(sig_c_short.is_valid) AddSignal(signals, signal_count, sig_c_short);
       }
       
       // Setup D: Mean Reversion
-      if(m_params->enable_setup_d) {
+      if(m_params.enable_setup_d) {
          TrySetup_MeanReversion(regime_signals, current_regime, sig_d_long, sig_d_short);
          if(sig_d_long.is_valid) AddSignal(signals, signal_count, sig_d_long);
          if(sig_d_short.is_valid) AddSignal(signals, signal_count, sig_d_short);
       }
       
       // Setup E: Squeeze Breakout
-      if(m_params->enable_setup_e) {
+      if(m_params.enable_setup_e) {
          TrySetup_SqueezeBreakout(regime_signals, current_regime, sig_e_long, sig_e_short);
          if(sig_e_long.is_valid) AddSignal(signals, signal_count, sig_e_long);
          if(sig_e_short.is_valid) AddSignal(signals, signal_count, sig_e_short);
       }
       
       // Setup F: Continuation
-      if(m_params->enable_setup_f) {
+      if(m_params.enable_setup_f) {
          TrySetup_Continuation(regime_signals, current_regime, sig_f_long, sig_f_short);
          if(sig_f_long.is_valid) AddSignal(signals, signal_count, sig_f_long);
          if(sig_f_short.is_valid) AddSignal(signals, signal_count, sig_f_short);
       }
       
-      if(m_params->debug_log_signals && signal_count > 0) {
+      if(m_params.debug_log_signals && signal_count > 0) {
          PrintFormat("✅ %d sinais válidos gerados", signal_count);
       }
    }
@@ -198,16 +198,16 @@ public:
       }
       
       // FILTRO 2: ADX não pode estar muito alto (evitar trending forte)
-      if(sig.adx > m_params->regime_adx_trend_threshold + 10.0) {
+      if(sig.adx > m_params.regime_adx_trend_threshold + 10.0) {
          return; // Trending muito forte para reversão
       }
       
       // Obter parâmetros LONG
-      int lookback = m_setup_params[0].liq_lookback_bars;
-      double sweep_pips = m_setup_params[0].long_params.liq_sweep_pips;
-      double sl_buffer_pips = m_setup_params[0].long_params.liq_sl_buffer_pips;
-      double di_margin = m_setup_params[0].long_params.liq_di_margin;
-      double wae_threshold = m_setup_params[0].long_params.liq_wae_threshold;
+      int lookback = m_setup_params.liq_lookback_bars;
+      double sweep_pips = m_setup_params.long_params.liq_sweep_pips;
+      double sl_buffer_pips = m_setup_params.long_params.liq_sl_buffer_pips;
+      double di_margin = m_setup_params.long_params.liq_di_margin;
+      double wae_threshold = m_setup_params.long_params.liq_wae_threshold;
       
       // DETECÇÃO LONG: Sweep de SSL (Sell-Side Liquidity)
       // Procurar swing low recente + sweep abaixo + reversão
@@ -258,11 +258,11 @@ public:
          
          // Calcular TP
          double sl_distance = out_long.entry_price - out_long.sl_price;
-         double tp_rr = m_setup_params[0].long_params.tp_rr_ratio;
+         double tp_rr = m_setup_params.long_params.tp_rr_ratio;
          out_long.tp_price = out_long.entry_price + (sl_distance * tp_rr);
          
          // Ajustar TP para POC se usar levels
-         if(m_setup_params[0].long_params.tp_use_levels && sig.poc > out_long.entry_price) {
+         if(m_setup_params.long_params.tp_use_levels && sig.poc > out_long.entry_price) {
             out_long.tp_price = sig.poc;
          }
          
@@ -292,10 +292,10 @@ public:
       double high_1 = iHigh(m_symbol, m_tf, 1);
       double sweep_distance_short = (high_1 - swing_high) / _Point;
       
-      sweep_pips = m_setup_params[0].short_params.liq_sweep_pips;
-      sl_buffer_pips = m_setup_params[0].short_params.liq_sl_buffer_pips;
-      di_margin = m_setup_params[0].short_params.liq_di_margin;
-      wae_threshold = m_setup_params[0].short_params.liq_wae_threshold;
+      sweep_pips = m_setup_params.short_params.liq_sweep_pips;
+      sl_buffer_pips = m_setup_params.short_params.liq_sl_buffer_pips;
+      di_margin = m_setup_params.short_params.liq_di_margin;
+      wae_threshold = m_setup_params.short_params.liq_wae_threshold;
       
       if(sweep_distance_short >= sweep_pips) {
          // SWEEP SHORT DETECTADO
@@ -318,10 +318,10 @@ public:
          out_short.sl_price = high_1 + (sl_buffer_pips * _Point);
          
          double sl_distance = out_short.sl_price - out_short.entry_price;
-         double tp_rr = m_setup_params[0].short_params.tp_rr_ratio;
+         double tp_rr = m_setup_params.short_params.tp_rr_ratio;
          out_short.tp_price = out_short.entry_price - (sl_distance * tp_rr);
          
-         if(m_setup_params[0].short_params.tp_use_levels && sig.poc < out_short.entry_price) {
+         if(m_setup_params.short_params.tp_use_levels && sig.poc < out_short.entry_price) {
             out_short.tp_price = sig.poc;
          }
          

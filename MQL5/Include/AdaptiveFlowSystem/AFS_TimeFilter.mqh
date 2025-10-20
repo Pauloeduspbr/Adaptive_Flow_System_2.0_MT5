@@ -18,16 +18,16 @@
 class CTimeFilter
 {
 private:
-   SGlobalParameters& m_params;
+   SGlobalParameters m_params;  // Direct struct copy (MQL5 doesn't support & references as members)
    
    ENUM_SESSION m_current_session;
    datetime m_session_last_check;
    
 public:
    // ========== CONSTRUCTOR ==========
-   CTimeFilter(SGlobalParameters& params)
+   CTimeFilter(const SGlobalParameters &params)
    {
-      m_params = params;
+      m_params = params;  // Struct copy assignment
       m_current_session = SESSION_ASIAN;
       m_session_last_check = 0;
    }
@@ -91,16 +91,16 @@ public:
       
       switch(dt.day_of_week)
       {
-         case 0: return DAY_SUNDAY;
-         case 1: return DAY_MONDAY;
-         case 2: return DAY_TUESDAY;
-         case 3: return DAY_WEDNESDAY;
-         case 4: return DAY_THURSDAY;
-         case 5: return DAY_FRIDAY;
-         case 6: return DAY_SATURDAY;
+         case 0: return SUNDAY;
+         case 1: return MONDAY;
+         case 2: return TUESDAY;
+         case 3: return WEDNESDAY;
+         case 4: return THURSDAY;
+         case 5: return FRIDAY;
+         case 6: return SATURDAY;
       }
       
-      return DAY_MONDAY; // Default
+      return MONDAY; // Default
    }
    
    // ========== HOURLY RANGE FILTER ==========
