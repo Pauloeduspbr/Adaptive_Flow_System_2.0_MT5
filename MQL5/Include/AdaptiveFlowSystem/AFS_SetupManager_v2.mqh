@@ -13,32 +13,6 @@
 #include "AFS_RegimeDetector.mqh"
 
 // ============================================================================
-// SIGNAL OUTPUT STRUCTURE
-// ============================================================================
-
-struct STradeSignal
-{
-   ENUM_SETUP_TYPE          setup_type;        // Renamed from 'setup'
-   ENUM_SIGNAL_DIRECTION    direction;
-   ENUM_ORDER_TYPE_SIGNAL   order_type;
-   
-   double                   entry_price;
-   double                   sl_price;
-   double                   tp_price;
-   
-   double                   confidence;        // 0..1
-   double                   rr_ratio;          // Risk:Reward ratio
-   int                      priority;          // Setup priority (A=20, B=18, ...)
-   
-   double                   pending_expiration_bars;  // Timeout for pending orders
-   datetime                 signal_time;       // When signal was generated
-   int                      signal_bar_index;  // Bar index
-   
-   string                   comment;           // Renamed from 'reason'
-   bool                     is_valid;
-};
-
-// ============================================================================
 // CLASS: CSetupManager
 // ============================================================================
 

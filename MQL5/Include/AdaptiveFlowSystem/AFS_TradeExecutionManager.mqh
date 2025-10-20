@@ -19,29 +19,6 @@
 // STRUCTURES
 // ============================================================================
 
-struct STradeSignal
-{
-   ENUM_SETUP_TYPE setup_type;
-   ENUM_SIGNAL_DIRECTION direction;
-   ENUM_ORDER_TYPE_SIGNAL order_type;
-   
-   double entry_price;
-   double sl_price;
-   double tp_price;
-   
-   double confidence;
-   double rr_ratio;
-   int priority;
-   
-   double pending_expiration_bars;
-   
-   datetime signal_time;
-   int signal_bar_index;
-   
-   string comment;
-   bool is_valid;
-};
-
 struct STradeState
 {
    ulong ticket;
