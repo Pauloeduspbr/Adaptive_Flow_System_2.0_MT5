@@ -9,8 +9,11 @@
 #ifndef __AFS_RISK_MANAGER_MQH__
 #define __AFS_RISK_MANAGER_MQH__
 
+// Forward declaration - CSymbolManager will be defined in the main EA
+class CSymbolManager;
+
 #include "AFS_GlobalParameters.mqh"
-#include "AFS_SymbolManager.mqh"
+// Note: CSymbolManager is included in the main EA before this file
 
 // ============================================================================
 // STRUCTURES
@@ -212,7 +215,13 @@ public:
       // Se usar lote fixo, retornar lote fixo
       if(m_params.use_fixed_lot) {
          double fixed_lot = m_params.fixed_lot_size;
-         return m_symbol_mgr->NormalizeLot(fixed_lot);
+         
+         // Null check + get symbol
+         if(m_symbol_mgr == NULL) return 0;
+         CSymbolManager* ptr = m_symbol_mgr;
+         string symbol = ptr.GetSymbol();
+         
+         return NormalizeLot(fixed_lot, symbol);
       }
       
       // Calcular risco em dinheiro
@@ -228,7 +237,7 @@ public:
       }
       
       // Calcular valor do pip
-      double pip_value_per_lot = m_symbol_mgr.GetPipValue(1.0);
+      double pip_value_per_lot = m_symbol_mgr->GetPipValue(1.0);
       
       if(pip_value_per_lot == 0) {
          PrintFormat("❌ Pip value zero");
@@ -236,16 +245,17 @@ public:
       }
       
       // Calcular pips de risco
-      double risk_pips = m_symbol_mgr.PriceToPips(risk_price);
+      double risk_pips = m_symbol_mgr->PriceToPips(risk_price);
       
       // Calcular lotes: risk_money / (risk_pips * pip_value_per_pip)
-      double lots = risk_money / (risk_pips * (pip_value_per_lot / m_symbol_mgr.GetContractSize()));
+      double lots = risk_money / (risk_pips * (pip_value_per_lot / m_symbol_mgr->GetContractSize()));
       
       // Aplicar multiplicador (se houver)
       lots *= m_params.lot_multiplier;
       
       // Normalizar
-      lots = m_symbol_mgr->NormalizeLot(lots);
+      string symbol = m_symbol_mgr->GetSymbol();
+      lots = NormalizeLot(lots, symbol);
       
       // Aplicar limites min/max
       lots = MathMax(m_params.min_lot, lots);
@@ -262,10 +272,10 @@ public:
       // Calcular risco percentual de uma posição
       
       double risk_price = MathAbs(entry - sl);
-      double risk_pips = m_symbol_mgr.PriceToPips(risk_price);
-      double pip_value_per_lot = m_symbol_mgr.GetPipValue(1.0);
+      double risk_pips = m_symbol_mgr->PriceToPips(risk_price);
+      double pip_value_per_lot = m_symbol_mgr->GetPipValue(1.0);
       
-      double risk_money = risk_pips * (pip_value_per_lot / m_symbol_mgr.GetContractSize()) * lots;
+      double risk_money = risk_pips * (pip_value_per_lot / m_symbol_mgr->GetContractSize()) * lots;
       
       double account_balance = AccountInfoDouble(ACCOUNT_BALANCE);
       
@@ -380,7 +390,7 @@ public:
          ulong ticket = PositionGetTicket(i);
          if(ticket <= 0) continue;
          
-         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr.GetSymbol()) continue;
+         if(PositionGetString(POSITION_SYMBOL) != m_symbol_mgr->GetSymbol()) continue;
          
          double position_entry = PositionGetDouble(POSITION_PRICE_OPEN);
          double position_sl = PositionGetDouble(POSITION_SL);
