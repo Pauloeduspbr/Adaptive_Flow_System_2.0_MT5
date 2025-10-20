@@ -212,7 +212,7 @@ public:
       // Se usar lote fixo, retornar lote fixo
       if(m_params.use_fixed_lot) {
          double fixed_lot = m_params.fixed_lot_size;
-         return m_symbol_mgr.NormalizeLot(fixed_lot);
+         return m_symbol_mgr->NormalizeLot(fixed_lot);
       }
       
       // Calcular risco em dinheiro
@@ -245,7 +245,7 @@ public:
       lots *= m_params.lot_multiplier;
       
       // Normalizar
-      lots = m_symbol_mgr.NormalizeLot(lots);
+      lots = m_symbol_mgr->NormalizeLot(lots);
       
       // Aplicar limites min/max
       lots = MathMax(m_params.min_lot, lots);

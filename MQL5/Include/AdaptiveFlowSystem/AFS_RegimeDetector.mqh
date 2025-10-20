@@ -195,7 +195,7 @@ public:
       // Vote 1: ADX (trend strength)
       if(MathIsValidNumber(s.adx)) { 
          v_total++; 
-         if(s.adx > m_params->regime_adx_trend_threshold) 
+         if(s.adx > m_params.regime_adx_trend_threshold) 
             v_trend++; 
          else 
             v_range++; 
@@ -204,9 +204,9 @@ public:
       // Vote 2: Choppiness Index (trend vs range)
       if(MathIsValidNumber(s.ci)) { 
          v_total++; 
-         if(s.ci < m_params->regime_ci_trend_threshold) 
+         if(s.ci < m_params.regime_ci_trend_threshold) 
             v_trend++; 
-         else if(s.ci > m_params->regime_ci_ranging_threshold) 
+         else if(s.ci > m_params.regime_ci_ranging_threshold) 
             v_range++; 
          else 
             v_breakout++; 
@@ -217,7 +217,7 @@ public:
          v_total++;
          if(s.squeeze_prev && !s.squeeze_now) 
             v_breakout++; // Squeeze released = breakout
-         else if(s.squeeze_now && s.bbw_pct <= m_params->regime_bbw_squeeze_threshold) 
+         else if(s.squeeze_now && s.bbw_pct <= m_params.regime_bbw_squeeze_threshold) 
             v_range++; // Active squeeze = ranging
          else 
             v_trend++;
@@ -226,9 +226,9 @@ public:
       // Vote 4: ATR% (volatility level)
       if(MathIsValidNumber(s.atr_pct)) {
          v_total++;
-         if(s.atr_pct < m_params->regime_atr_pct_low_threshold) 
+         if(s.atr_pct < m_params.regime_atr_pct_low_threshold) 
             v_range++; // Low volatility = ranging
-         else if(s.atr_pct > m_params->regime_atr_pct_high_threshold) { 
+         else if(s.atr_pct > m_params.regime_atr_pct_high_threshold) { 
             // High volatility: check CI to distinguish trend vs breakout
             if(s.ci < 50.0) 
                v_trend++; 
@@ -242,9 +242,9 @@ public:
       // Vote 5: ATR ROC (momentum of volatility)
       if(MathIsValidNumber(s.atr_roc)) {
          v_total++;
-         if(s.atr_roc > m_params->regime_atr_roc_accel_threshold) 
+         if(s.atr_roc > m_params.regime_atr_roc_accel_threshold) 
             v_breakout++; // Accelerating volatility = breakout
-         else if(s.atr_roc < m_params->regime_atr_roc_decel_threshold) 
+         else if(s.atr_roc < m_params.regime_atr_roc_decel_threshold) 
             v_range++; // Decelerating volatility = ranging
          else 
             v_trend++; // Stable volatility = trending
@@ -274,7 +274,7 @@ public:
       if(MathIsValidNumber(s.plus_di) && MathIsValidNumber(s.minus_di)) {
          v_total++;
          double di_diff = MathAbs(s.plus_di - s.minus_di);
-         if(s.adx > m_params->regime_adx_trend_threshold && di_diff > m_params->regime_di_dominance_threshold) 
+         if(s.adx > m_params.regime_adx_trend_threshold && di_diff > m_params.regime_di_dominance_threshold) 
             v_trend++; // Strong ADX + clear direction = trending
          else 
             v_range++; // Weak directional dominance = ranging

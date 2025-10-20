@@ -13,11 +13,7 @@
 #include <Trade\Trade.mqh>
 #include "AFS_GlobalParameters.mqh"
 #include "AFS_SymbolManager.mqh"
-
-// ============================================================================
-// FORWARD DECLARATIONS (quebra dependência circular)
-// ============================================================================
-class CTradeExecutionManager;  // Forward declaration - tipo será definido depois
+#include "AFS_TradeExecutionManager.mqh"  // FULL INCLUDE - não há dependência circular
 
 // ============================================================================
 // CLASS: CPositionManager
