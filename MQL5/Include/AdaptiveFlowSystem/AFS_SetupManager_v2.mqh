@@ -248,7 +248,11 @@ public:
          }
          */
          
-         // FILTRO 5: Close[0] deve estar acima do swing_low (confirmação reversão)
+         // FILTRO 5: CLOSE FILTER REMOVIDO
+         // MOTIVO: Lógica contraditória - sweep quebra ABAIXO do swing_low, 
+         // mas filtro exigia close ACIMA (rejeitava 100% dos sinais)
+         // DI Filter já valida momentum suficiente
+         /*
          double close_0 = iClose(m_symbol, m_tf, 0);
          if(close_0 <= swing_low) {
             if(m_params.debug_log_signals) {
@@ -257,9 +261,11 @@ public:
             }
             return;
          }
+         */
          
          // ✅ SINAL LONG VÁLIDO
-         out_long.entry_price = iClose(m_symbol, m_tf, 0); // Market entry
+         double close_0 = iClose(m_symbol, m_tf, 0);
+         out_long.entry_price = close_0; // Market entry
          out_long.sl_price = low_1 - (sl_buffer_pips * _Point);
          
          // Calcular TP
@@ -327,6 +333,11 @@ public:
          }
          */
          
+         // FILTRO CLOSE REMOVIDO
+         // MOTIVO: Lógica contraditória - sweep quebra ACIMA do swing_high,
+         // mas filtro exigia close ABAIXO (rejeitava 100% dos sinais)
+         // DI Filter já valida momentum suficiente
+         /*
          double close_0 = iClose(m_symbol, m_tf, 0);
          if(close_0 >= swing_high) {
             if(m_params.debug_log_signals) {
@@ -335,8 +346,10 @@ public:
             }
             return;
          }
+         */
          
          // ✅ SINAL SHORT VÁLIDO
+         double close_0 = iClose(m_symbol, m_tf, 0);
          out_short.entry_price = close_0;
          out_short.sl_price = high_1 + (sl_buffer_pips * _Point);
          
